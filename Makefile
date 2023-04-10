@@ -1,22 +1,25 @@
-NAME=main
+NAME:=lat
 
-SRCDIR=src
-IDIR=include
-ODIR=obj
-BINDIR=build
+SRCDIR:=src
+IDIR:=include
+ODIR:=obj
+BINDIR:=build
 
-CC=cc
-CFLAGS=-I$(IDIR) -Wall -Wextra -pedantic
-LIB=
+CC:=cc
+CFLAGS:=-I$(IDIR) -Wall -Wextra -pedantic
+LIB:=
 
-_DEPS=lib.h
-DEPS=$(patsubst %,$(IDIR)/%,$(_DEPS))
+DEPS:=$($(IDIR)/%.h)
 
-_OBJ=$(NAME).o lib.o
-OBJ=$(patsubst %,$(ODIR)/%,$(_OBJ))
+#SRCS:=$(wildcard $(SRCDIR)/*.c)
+SRCS=$(shell find . -name "*.c")
+BASENAME:=$(shell basename $(SRCS))
 
+VPATH=$(dir $(SRCS))
 
-$(ODIR)/%.o: $(SRCDIR)/%.c $(DEPS)
+OBJ=$(patsubst %.c,./$(ODIR)/%.o,$(BASENAME))
+
+$(ODIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(LIB)
 
 $(NAME): $(OBJ)
