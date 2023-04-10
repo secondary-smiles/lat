@@ -9,10 +9,10 @@ CC=cc
 CFLAGS=-I$(IDIR) -Wall -Wextra -pedantic
 LIB=
 
-_DEPS=
+_DEPS=lib.h
 DEPS=$(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ=$(NAME).o
+_OBJ=$(NAME).o lib.o
 OBJ=$(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
