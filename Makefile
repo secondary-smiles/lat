@@ -11,9 +11,8 @@ LIB:=
 
 DEPS:=$($(IDIR)/%.h)
 
-#SRCS:=$(wildcard $(SRCDIR)/*.c)
 SRCS=$(shell find . -name "*.c")
-BASENAME:=$(shell basename $(SRCS))
+BASENAME:=$(shell basename -a $(SRCS))
 
 VPATH=$(dir $(SRCS))
 

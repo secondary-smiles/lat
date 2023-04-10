@@ -64,7 +64,7 @@ int run(char *filename) {
       lc++;
       int padlen = lcpad - intlen(lc);
       char padding[padlen];
-      memset(padding, '0', padlen);
+      memset(padding, ' ', padlen);
       if (tty)
         fprintf(stderr, "%s%s%d:%s ", GREY, padding, lc, RESET);
     }
@@ -83,16 +83,16 @@ int run(char *filename) {
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
-    fprintf(stderr, "usage: catclone <FILE>\n");
-    die("args");
+    fprintf(stderr, "usage: %s <FILE/s>\n", argv[0]);
+    exit(1);
   }
 
-  for (int i = 1; i < argc; i++) {
+  for (int i = 1; i < argc; i++) { // start at one to offset argv[0]
     if (run(argv[i]) != 0)
       die("run");
 
     if (i + 1 != argc) {
-      fprintf(stderr, "\r\n");
+      fprintf(stderr, "\r\n"); // separate concurrent files
     }
   }
 
