@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "lib.h"
 
@@ -10,12 +11,15 @@
 #define RESET "\x1b[0m"
 
 int run(char *filename) {
+  int tty = isatty(STDOUT_FILENO);
+
   FILE *fp = fopen(filename, "r+b");
 
   if (fp == NULL)
     die("fopen");
 
-  printf("%s%s%s\r\n", INVERT_T, filename, UINVERT_T);
+  if (tty)
+    fprintf(stderr, "%s%s%s\r\n", INVERT_T, filename, UINVERT_T);
 
   int bufsize = 4;
   char *buf;
@@ -61,7 +65,8 @@ int run(char *filename) {
       int padlen = lcpad - intlen(lc);
       char padding[padlen];
       memset(padding, '0', padlen);
-      printf("%s%s%d:%s ", GREY, padding, lc, RESET);
+      if (tty)
+        fprintf(stderr, "%s%s%d:%s ", GREY, padding, lc, RESET);
     }
 
     pc = c;
@@ -70,14 +75,15 @@ int run(char *filename) {
 
   char *format = formatBytes(&fsize);
 
-  printf("%s%.2f %s%s\r\n", INVERT_T, fsize, format, UINVERT_T);
+  if (tty)
+    fprintf(stderr, "%s%.2f %s%s\r\n", INVERT_T, fsize, format, UINVERT_T);
 
   return 0;
 }
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
-    printf("usage: catclone <FILE>\n");
+    fprintf(stderr, "usage: catclone <FILE>\n");
     die("args");
   }
 
@@ -86,7 +92,7 @@ int main(int argc, char *argv[]) {
       die("run");
 
     if (i + 1 != argc) {
-      printf("\r\n");
+      fprintf(stderr, "\r\n");
     }
   }
 
