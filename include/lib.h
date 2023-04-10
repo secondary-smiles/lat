@@ -3,4 +3,6 @@
 void die(const char *message);
 
 char* formatBytes(double *bytes);
+
+int intlen(unsigned i);
 #endif

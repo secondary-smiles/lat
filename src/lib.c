@@ -24,3 +24,14 @@ char *formatBytes(double *bytes) {
 
   return SIZES[div];
 }
+
+int intlen(unsigned i) {
+  int l = 1;
+
+  while (i > 9) {
+    l++;
+    i /= 10;
+  }
+
+  return l;
+}
