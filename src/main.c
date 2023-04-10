@@ -57,7 +57,7 @@ int run(char *filename) {
 
   lc = 0;
   char pc = '\0';
-  for (int i = 0; i < offset; i++) {
+  for (int i = 0; (unsigned)i < offset; i++) {
     c = buf[i];
 
     if (pc == '\n' || i == 0) {
