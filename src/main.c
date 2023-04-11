@@ -12,7 +12,7 @@
 #define GREY "\x1b[90m"
 #define RESET "\x1b[0m"
 
-int run(char *filename) {
+void run(char *filename) {
   int tty = isatty(STDOUT_FILENO);
 
   FILE *fp = fopen(filename, "r+b");
@@ -36,27 +36,25 @@ int run(char *filename) {
   for (unsigned i = 0; i < f.len; i++) {
     c = f.buf[i];
 
-    if (pc == '\n' || i == 0) {
+    if (tty && (pc == '\n' || i == 0)) {
       f.lc++;
       int padlen = lcpad - intlen(f.lc);
       char padding[padlen];
       memset(padding, ' ', padlen);
 
-      if (tty)
-        fprintf(stderr, "%s%s%d:%s ", GREY, padding, f.lc, RESET);
+      fprintf(stderr, "%s%s%d:%s ", GREY, padding, f.lc, RESET);
     }
 
     pc = c;
     printf("%c", c);
   }
 
-  float rounded;
-  char *format = formatBytes(f.len, &rounded);
+  if (tty) {
+    float rounded;
+    char *format = formatBytes(f.len, &rounded);
 
-  if (tty)
     fprintf(stderr, "%s%.2f %s%s\r\n", INVERT_T, rounded, format, UINVERT_T);
-
-  return 0;
+  }
 }
 
 int main(int argc, char *argv[]) {
@@ -66,8 +64,7 @@ int main(int argc, char *argv[]) {
   }
 
   for (int i = 1; i < argc; i++) { // start at one to offset argv[0]
-    if (run(argv[i]) != 0)
-      die("run");
+    run(argv[i]);
 
     if (i + 1 != argc) {
       fprintf(stderr, "\r\n"); // separate concurrent files
