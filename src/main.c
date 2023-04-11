@@ -15,9 +15,6 @@
 void run(FILE *fp, char *filename) {
   int tty = isatty(STDOUT_FILENO);
 
-  if (fp == NULL)
-    die("fopen");
-
   struct filedata f;
   f = readfile(fp);
 
@@ -56,9 +53,9 @@ void run(FILE *fp, char *filename) {
 int main(int argc, char *argv[]) {
   if (argc > 1) {
     for (int i = 1; i < argc; i++) { // start at one to offset argv[0]
-      printf("%s\r\n", argv[i]);
-
       FILE *fp = fopen(argv[i], "rb");
+      if (fp == NULL)
+        die(argv[i]);
       run(fp, argv[i]);
       fclose(fp);
 

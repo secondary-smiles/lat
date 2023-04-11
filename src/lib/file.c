@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #include "file.h"
-#include "lib.h"
+#include "util.h"
 
 struct filedata readfile(FILE *fp) {
   struct filedata f;
