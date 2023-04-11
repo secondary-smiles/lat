@@ -7,7 +7,7 @@ void die(const char *message) {
   exit(1);
 }
 
-char *formatBytes(size_t bytes, float *rounded) {
+char *formatbytes(size_t bytes, float *rounded) {
   char *SIZES[] = {"bytes", "kB", "MB", "GB"};
 
   size_t size = bytes;

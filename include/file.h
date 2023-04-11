@@ -5,6 +5,7 @@
 struct filedata {
   int lc;
   size_t len;
+  int binary;
   char *buf;
 };
 
