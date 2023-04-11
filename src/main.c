@@ -12,21 +12,17 @@
 #define GREY "\x1b[90m"
 #define RESET "\x1b[0m"
 
-void run(char *filename) {
+void run(FILE *fp, char *filename) {
   int tty = isatty(STDOUT_FILENO);
-
-  FILE *fp = fopen(filename, "r+b");
 
   if (fp == NULL)
     die("fopen");
 
-  if (tty)
-    fprintf(stderr, "%s%s%s\r\n", INVERT_T, basename(filename), UINVERT_T);
-
   struct filedata f;
   f = readfile(fp);
 
-  fclose(fp);
+  if (tty)
+    fprintf(stderr, "\r%s%s%s\r\n", INVERT_T, basename(filename), UINVERT_T);
 
   int lcpad = intlen(f.lc);
 
@@ -42,7 +38,7 @@ void run(char *filename) {
       char padding[padlen];
       memset(padding, ' ', padlen);
 
-      fprintf(stderr, "%s%s%d:%s ", GREY, padding, f.lc, RESET);
+      fprintf(stderr, "\r%s%s%d:%s ", GREY, padding, f.lc, RESET);
     }
 
     pc = c;
@@ -53,22 +49,25 @@ void run(char *filename) {
     float rounded;
     char *format = formatBytes(f.len, &rounded);
 
-    fprintf(stderr, "%s%.2f %s%s\r\n", INVERT_T, rounded, format, UINVERT_T);
+    fprintf(stderr, "\r%s%.2f %s%s\r\n", INVERT_T, rounded, format, UINVERT_T);
   }
 }
 
 int main(int argc, char *argv[]) {
-  if (argc < 2) {
-    fprintf(stderr, "usage: %s <FILE/s>\n", argv[0]);
-    exit(1);
-  }
+  if (argc > 1) {
+    for (int i = 1; i < argc; i++) { // start at one to offset argv[0]
+      printf("%s\r\n", argv[i]);
 
-  for (int i = 1; i < argc; i++) { // start at one to offset argv[0]
-    run(argv[i]);
+      FILE *fp = fopen(argv[i], "rb");
+      run(fp, argv[i]);
+      fclose(fp);
 
-    if (i + 1 != argc) {
-      fprintf(stderr, "\r\n"); // separate concurrent files
+      if (i + 1 != argc) {
+        fprintf(stderr, "\r\n"); // separate concurrent files
+      }
     }
+  } else {
+    run(stdin, "stdin"); // for piped-input or repl-like behavior
   }
 
   return 0;
