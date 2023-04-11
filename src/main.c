@@ -1,8 +1,10 @@
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
+#include "file.h"
 #include "lib.h"
 
 #define INVERT_T "\x1b[7m"
@@ -19,64 +21,40 @@ int run(char *filename) {
     die("fopen");
 
   if (tty)
-    fprintf(stderr, "%s%s%s\r\n", INVERT_T, filename, UINVERT_T);
+    fprintf(stderr, "%s%s%s\r\n", INVERT_T, basename(filename), UINVERT_T);
 
-  int bufsize = 4;
-  char *buf;
+  struct filedata f;
+  f = readfile(fp);
 
-  buf = malloc(bufsize);
-  if (buf == NULL)
-    die("malloc");
-
-  double fsize = 0;
-  unsigned offset = 0;
-  unsigned lc = 0;
-  char c;
-  while (fread(&c, sizeof(char), 1, fp) > 0) {
-    if (fsize == bufsize - 1) {
-      bufsize *= 2;
-
-      char *new_buf = realloc(buf, bufsize);
-      if (buf == NULL) {
-        free(buf);
-        die("realloc");
-      }
-
-      buf = new_buf;
-    }
-
-    if (c == '\n')
-      lc++;
-
-    buf[offset++] = c;
-    fsize++;
-  }
   fclose(fp);
 
-  int lcpad = intlen(lc);
+  int lcpad = intlen(f.lc);
 
-  lc = 0;
+  f.lc = 0;
   char pc = '\0';
-  for (int i = 0; (unsigned)i < offset; i++) {
-    c = buf[i];
+  char c;
+  for (unsigned i = 0; i < f.len; i++) {
+    c = f.buf[i];
 
     if (pc == '\n' || i == 0) {
-      lc++;
-      int padlen = lcpad - intlen(lc);
+      f.lc++;
+      int padlen = lcpad - intlen(f.lc);
       char padding[padlen];
       memset(padding, ' ', padlen);
+
       if (tty)
-        fprintf(stderr, "%s%s%d:%s ", GREY, padding, lc, RESET);
+        fprintf(stderr, "%s%s%d:%s ", GREY, padding, f.lc, RESET);
     }
 
     pc = c;
     printf("%c", c);
   }
 
-  char *format = formatBytes(&fsize);
+  float rounded;
+  char *format = formatBytes(f.len, &rounded);
 
   if (tty)
-    fprintf(stderr, "%s%.2f %s%s\r\n", INVERT_T, fsize, format, UINVERT_T);
+    fprintf(stderr, "%s%.2f %s%s\r\n", INVERT_T, rounded, format, UINVERT_T);
 
   return 0;
 }
