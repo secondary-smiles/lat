@@ -18,7 +18,7 @@ void run(FILE *fp, char *filename, int tty) {
 
   if (tty) {
     char *addon = f.binary ? " <binary>" : "";
-    fprintf(stderr, "\n%s%s%s%s\r\n", INVERT_T, basename(filename), addon,
+    fprintf(stderr, "\r%s%s%s%s\r\n", INVERT_T, basename(filename), addon,
             UINVERT_T);
   }
 
