@@ -4,7 +4,7 @@
 #define FILE_H
 struct filedata {
   int lc;
-  unsigned len;
+  size_t len;
   char *buf;
 };
 

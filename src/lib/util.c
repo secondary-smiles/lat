@@ -7,12 +7,12 @@ void die(const char *message) {
   exit(1);
 }
 
-char *formatBytes(unsigned bytes, float *rounded) {
+char *formatBytes(size_t bytes, float *rounded) {
   char *SIZES[] = {"bytes", "kB", "MB", "GB"};
 
-  unsigned size = bytes;
-  unsigned div = 0;
-  unsigned rem = 0;
+  size_t size = bytes;
+  size_t div = 0;
+  size_t rem = 0;
 
   while (size >= 1024 && div < (sizeof SIZES / sizeof *SIZES)) {
     rem = (size % 1024);
@@ -25,7 +25,7 @@ char *formatBytes(unsigned bytes, float *rounded) {
   return SIZES[div];
 }
 
-int intlen(unsigned i) {
+int intlen(size_t i) {
   int l = 1;
 
   while (i > 9) {

@@ -26,16 +26,18 @@ void run(FILE *fp, char *filename) {
   f.lc = 0;
   char pc = '\0';
   char c;
-  for (unsigned i = 0; i < f.len; i++) {
+  for (size_t i = 0; i < f.len; i++) {
     c = f.buf[i];
 
     if (tty && (pc == '\n' || i == 0)) {
       f.lc++;
+
       int padlen = lcpad - intlen(f.lc);
       char padding[padlen];
       memset(padding, ' ', padlen);
 
-      fprintf(stderr, "\r%s%s%d:%s ", GREY, padding, f.lc, RESET);
+      fprintf(stderr, "\r%s%s%d:%s ", GREY, padlen > 0 ? padding : "", f.lc,
+              RESET); // padlen  < 1 causes undefined
     }
 
     pc = c;

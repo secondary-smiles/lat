@@ -10,7 +10,7 @@ struct filedata readfile(FILE *fp) {
   f.lc = 0;
   f.len = 0;
 
-  unsigned bufsize = 4;
+  size_t bufsize = 4;
 
   f.buf = malloc(bufsize);
   if (f.buf == NULL)
