@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 #include "file.h"
-#include "lib.h"
+#include "util.h"
 
 #define INVERT_T "\x1b[7m"
 #define UINVERT_T "\x1b[27m"
