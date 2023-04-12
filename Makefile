@@ -6,7 +6,7 @@ ODIR:=obj
 BINDIR:=build
 
 CC:=cc
-CFLAGS:=-I$(IDIR) -Wall -Wextra -pedantic
+CFLAGS:=-I$(IDIR) -Wall -Wextra -pedantic -Ofast
 LIB:=
 
 DEPS:=$($(IDIR)/%.h)
