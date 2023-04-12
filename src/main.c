@@ -12,13 +12,17 @@
 #define GREY "\x1b[90m"
 #define RESET "\x1b[0m"
 
-int color = 1;
+struct config {
+  int color;
+};
+
+struct config conf;
 
 void run(FILE *fp, char *filename, int tty) {
-  const char *invert_t = color ? INVERT_T : "";
-  const char *uinvert_t = color ? UINVERT_T : "";
-  const char *grey = color ? GREY : "";
-  const char *reset = color ? RESET : "";
+  const char *invert_t = conf.color ? INVERT_T : "";
+  const char *uinvert_t = conf.color ? UINVERT_T : "";
+  const char *grey = conf.color ? GREY : "";
+  const char *reset = conf.color ? RESET : "";
 
   struct filedata f;
   f = readfile(fp);
@@ -66,11 +70,15 @@ void run(FILE *fp, char *filename, int tty) {
   }
 }
 
+void initconf(void) { conf.color = 1; }
+
 int main(int argc, char *argv[]) {
+  initconf();
+
   char *no_color = getenv("NO_COLOR");
 
   if (no_color != NULL && no_color[0] != '\0') {
-    color = 0;
+    conf.color = 0;
   }
 
   if (argc > 1) {
