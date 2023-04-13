@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "arg.h"
 #include "file.h"
 #include "util.h"
 
@@ -11,12 +12,6 @@
 #define UINVERT_T "\x1b[27m"
 #define GREY "\x1b[90m"
 #define RESET "\x1b[0m"
-
-struct config {
-  int color;
-};
-
-struct config conf;
 
 void run(FILE *fp, char *filename, int tty) {
   const char *invert_t = conf.color ? INVERT_T : "";
@@ -41,7 +36,7 @@ void run(FILE *fp, char *filename, int tty) {
   for (size_t i = 0; i < f.len; i++) {
     c = f.buf[i];
 
-    if (tty && !f.binary && (pc == '\n' || i == 0)) {
+    if ((conf.lines && tty && !f.binary) && (pc == '\n' || i == 0)) {
       f.lc++;
 
       int padlen = lcpad - intlen(f.lc);
@@ -70,24 +65,29 @@ void run(FILE *fp, char *filename, int tty) {
   }
 }
 
-void initconf(void) { conf.color = 1; }
+void initconf(void) {
+  conf.color = true;
+  conf.lines = true;
+}
 
 int main(int argc, char *argv[]) {
   initconf();
 
+  // init no_color first so that args take priority
   char *no_color = getenv("NO_COLOR");
 
   if (no_color != NULL && no_color[0] != '\0') {
-    conf.color = 0;
+    conf.color = false;
   }
 
   if (argc > 1) {
-    for (int i = 1; i < argc; i++) { // start at one to offset argv[0]
+    int offset = parseargs(argc, argv);
+    for (int i = offset; i < argc; i++) { // start at one to offset argv[0]
       FILE *fp = fopen(argv[i], "rb");
       if (fp == NULL)
         die(argv[i]);
 
-      int tty = isatty(STDOUT_FILENO);
+      bool tty = isatty(STDOUT_FILENO);
       run(fp, argv[i], tty);
       fclose(fp);
 
@@ -99,5 +99,5 @@ int main(int argc, char *argv[]) {
     run(stdin, "stdin", 1); // for piped-input or repl-like behavior
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

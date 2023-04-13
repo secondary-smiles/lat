@@ -1,7 +1,7 @@
-#include <stdio.h>
-
 #ifndef FILE_H
 #define FILE_H
+
+#include <stdio.h>
 struct filedata {
   int lc;
   size_t len;

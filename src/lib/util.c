@@ -4,7 +4,7 @@
 
 void die(const char *message) {
   perror(message);
-  exit(1);
+  exit(EXIT_FAILURE);
 }
 
 char *formatbytes(size_t bytes, float *rounded) {
