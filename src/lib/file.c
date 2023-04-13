@@ -40,7 +40,7 @@ struct filedata readfile(FILE *fp) {
 
   // guess if printable
   // from https://github.com/sharkdp/content_inspector/blob/master/src/lib.rs
-  int testlen = 64;
+  int testlen = f.len >= 64 ? 64 : f.len;
   char *testbuf[testlen];
   memcpy(testbuf, f.buf, testlen);
 
