@@ -23,9 +23,9 @@ void run(FILE *fp, char *filename, int tty) {
   f = readfile(fp);
 
   if (tty) {
-    char *addon = f.binary ? " <binary>" : "";
-    fprintf(stderr, "\r%s%s%s%s\r\n", invert_t, basename(filename), addon,
-            uinvert_t);
+    char *addon = f.binary ? "<binary>" : "";
+    fprintf(stderr, "\r\x1b[2K%s%s%s%s\r\n", invert_t, basename(filename),
+            addon, uinvert_t);
   }
 
   int lcpad = intlen(f.lc);
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 
   if (argc > 1) {
     int offset = parseargs(argc, argv);
-    for (int i = offset; i < argc; i++) { // start at one to offset argv[0]
+    for (int i = offset; i < argc; i++) {
       FILE *fp = fopen(argv[i], "rb");
       if (fp == NULL)
         die(argv[i]);
@@ -91,9 +91,13 @@ int main(int argc, char *argv[]) {
       run(fp, argv[i], tty);
       fclose(fp);
 
-      if (i + 1 != argc) {
-        fprintf(stderr, "\r\n"); // separate concurrent files
+      if (tty && (i + 1 != argc)) {
+        fprintf(stderr, "\r\n"); // separate concurrent files in tty
       }
+    }
+
+    if (offset == argc) {
+      run(stdin, "stdin", 1);
     }
   } else {
     run(stdin, "stdin", 1); // for piped-input or repl-like behavior
