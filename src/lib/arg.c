@@ -89,6 +89,10 @@ int parseargs(int argc, char *argv[]) {
   for (i = 1; i < argc; i++) { // offset for argv[0]
     char *arg = argv[i];
 
+    if (*arg == '-') {
+      return i;
+    }
+
     if (arg[0] == '-') {
       if (arg[1] == '-') {
         parselongarg(arg);

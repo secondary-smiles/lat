@@ -13,7 +13,7 @@
 #define GREY "\x1b[90m"
 #define RESET "\x1b[0m"
 
-void run(FILE *fp, char *filename, int tty) {
+void run(FILE *fp, char *filename, bool tty) {
   const char *invert_t = conf.color ? INVERT_T : "";
   const char *uinvert_t = conf.color ? UINVERT_T : "";
   const char *grey = conf.color ? GREY : "";
@@ -68,6 +68,13 @@ void run(FILE *fp, char *filename, int tty) {
 void initconf(void) {
   conf.color = true;
   conf.lines = true;
+  conf.has_read_stdin = false;
+}
+
+void clearstdin() {
+  // from
+  // https://stackoverflow.com/questions/7898215/how-to-clear-input-buffer-in-c
+  fseek(stdin, 0, SEEK_END);
 }
 
 int main(int argc, char *argv[]) {
@@ -80,14 +87,21 @@ int main(int argc, char *argv[]) {
     conf.color = false;
   }
 
+  bool tty = isatty(STDOUT_FILENO);
   if (argc > 1) {
     int offset = parseargs(argc, argv);
     for (int i = offset; i < argc; i++) {
+      if (*argv[i] == '-') {
+        if (conf.has_read_stdin)
+          clearstdin();
+        conf.has_read_stdin = true;
+        run(stdin, "stdin", tty);
+        continue;
+      }
+
       FILE *fp = fopen(argv[i], "rb");
       if (fp == NULL)
         die(argv[i]);
-
-      bool tty = isatty(STDOUT_FILENO);
       run(fp, argv[i], tty);
       fclose(fp);
 
@@ -97,10 +111,10 @@ int main(int argc, char *argv[]) {
     }
 
     if (offset == argc) {
-      run(stdin, "stdin", 1);
+      run(stdin, "stdin", tty);
     }
   } else {
-    run(stdin, "stdin", 1); // for piped-input or repl-like behavior
+    run(stdin, "stdin", tty); // for piped-input or repl-like behavior
   }
 
   return EXIT_SUCCESS;

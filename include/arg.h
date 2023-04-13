@@ -7,6 +7,7 @@
 struct config {
   bool color;
   bool lines;
+  bool has_read_stdin;
 };
 
 extern struct config conf;
