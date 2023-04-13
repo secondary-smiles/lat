@@ -71,7 +71,7 @@ void initconf(void) {
   conf.has_read_stdin = false;
 }
 
-void clearstdin() {
+void clearstdin(void) {
   // from
   // https://stackoverflow.com/questions/7898215/how-to-clear-input-buffer-in-c
   fseek(stdin, 0, SEEK_END);

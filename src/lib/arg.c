@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LAT_USAGE "usage: lat [cnVh] [files..]"
+#define LAT_USAGE "usage: lat [-cnVh] [files..]"
 
 void help(void) {
   printf("%s\n", LAT_USAGE);
@@ -89,7 +89,7 @@ int parseargs(int argc, char *argv[]) {
   for (i = 1; i < argc; i++) { // offset for argv[0]
     char *arg = argv[i];
 
-    if (*arg == '-') {
+    if (arg[0] == '-' && arg[1] == '\0') {
       return i;
     }
 
