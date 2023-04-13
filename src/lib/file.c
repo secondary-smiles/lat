@@ -12,31 +12,20 @@ struct filedata readfile(FILE *fp) {
   f.len = 0;
   f.binary = 0;
 
-  size_t bufsize = 4;
-  f.buf = malloc(bufsize);
+  // expects to be at  beginning of file
+  fseek(fp, 0, SEEK_END);
+  f.len = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+
+  f.buf = malloc(f.len);
   if (f.buf == NULL)
     die("malloc");
 
-  char c;
-  while (fread(&c, sizeof(char), 1, fp) > 0) {
-    if (f.len == bufsize - 1) {
-      bufsize *= 2;
-
-      char *new_buf = realloc(f.buf, bufsize);
-      if (f.buf == NULL) {
-        free(f.buf);
-        die("realloc");
-      }
-
-      f.buf = new_buf;
-    }
-
-    if (c == '\n') {
-      f.lc++;
-    }
-
-    f.buf[f.len++] = c;
+  if (fread(f.buf, f.len, 1, fp) < 0) {
+    die("fread");
   }
+
+  f.lc = 1000;
 
   // guess if printable
   // from https://github.com/sharkdp/content_inspector/blob/master/src/lib.rs
