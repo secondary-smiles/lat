@@ -63,6 +63,8 @@ void run(FILE *fp, char *filename, bool tty) {
     fprintf(stderr, "\r%s%s%.2f %s%s\r\n", cnewline, invert_t, rounded, format,
             uinvert_t);
   }
+
+  free(f.buf);
 }
 
 void initconf(void) {
