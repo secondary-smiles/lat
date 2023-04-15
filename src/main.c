@@ -30,28 +30,30 @@ void run(FILE *fp, char *filename, bool tty) {
 
   int lcpad = intlen(f.lc);
 
-  f.lc = 0;
-  char pc = '\0';
-  char c;
-  for (size_t i = 0; i < f.len; i++) {
-    c = f.buf[i];
+  // f.lc = 0;
+  // char pc = '\0';
+  // char c;
+  // for (size_t i = 0; i < f.len; i++) {
+  //   c = f.buf[i];
 
-    if ((conf.lines && tty && !f.binary) && (pc == '\n' || i == 0)) {
-      f.lc++;
+  //   if ((conf.lines && tty && !f.binary) && (pc == '\n' || i == 0)) {
+  //     f.lc++;
 
-      int padlen = lcpad - intlen(f.lc);
-      char padding[padlen];
+  //     int padlen = lcpad - intlen(f.lc);
+  //     char padding[padlen];
 
-      if (padlen)
-        memset(padding, ' ', padlen);
+  //     if (padlen)
+  //       memset(padding, ' ', padlen);
 
-      fprintf(stderr, "\r%s%s%d:%s ", grey, padlen > 0 ? padding : "", f.lc,
-              reset); // padlen  < 1 causes undefined
-    }
+  //     fprintf(stderr, "\r%s%s%d:%s ", grey, padlen > 0 ? padding : "", f.lc,
+  //             reset); // padlen  < 1 causes undefined
+  //   }
 
-    pc = c;
-    printf("%c", c);
-  }
+  //   pc = c;
+  //   printf("%c", c);
+  // }
+
+  printf("%s", f.buf);
 
   fflush(stdout); // prevent timing inconsistencies between stdout and stderr
 
@@ -59,7 +61,8 @@ void run(FILE *fp, char *filename, bool tty) {
     float rounded;
     char *format = formatbytes(f.len, &rounded);
 
-    char *cnewline = c == '\n' ? "" : "\n";
+    // char *cnewline = c == '\n' ? "" : "\n";
+    char *cnewline = "";
     fprintf(stderr, "\r%s%s%.2f %s%s\r\n", cnewline, invert_t, rounded, format,
             uinvert_t);
   }

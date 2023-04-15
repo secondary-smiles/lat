@@ -25,7 +25,7 @@ struct filedata readfile(FILE *fp) {
     die("fread");
   }
 
-  f.lc = 1000;
+  f.lc = 10000;
 
   // guess if printable
   // from https://github.com/sharkdp/content_inspector/blob/master/src/lib.rs

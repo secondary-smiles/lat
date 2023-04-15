@@ -7,6 +7,7 @@ struct filedata {
   size_t len;
   int binary;
   char *buf;
+  char *altbuf;
 };
 
 struct filedata readfile(FILE *fp);
