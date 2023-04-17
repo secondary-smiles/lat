@@ -21,7 +21,7 @@ void run(FILE *fp, char *filename, bool tty) {
   const char *reset = conf.color ? RESET : "";
 
   struct filedata f;
-  f = readfile(fp);
+  f = readfile(fp, conf.stdin);
 
   if (tty) {
     char *addon = f.binary ? "<binary>" : "";
@@ -40,7 +40,7 @@ void run(FILE *fp, char *filename, bool tty) {
     for (int i = 0; i < f.lc; i++) {
       if (conf.lines) {
         char *padding = linepad(linecount, f.lc);
-        printf("%s%s%d:%s %s\n", grey, padding, i, reset, f.lines[i].buf);
+        printf("%s%s%d:%s %s\n", grey, padding, i + 1, reset, f.lines[i].buf);
         free(padding);
         linecount++;
       } else {
@@ -60,14 +60,12 @@ void run(FILE *fp, char *filename, bool tty) {
     float rounded;
     char *format = formatbytes(f.buflen, &rounded);
 
-    // char *cnewline = c == '\n' ? "" : "\n";
-    char *cnewline = "";
-    fprintf(stderr, "\r%s%s%.2f %s%s\r\n", cnewline, invert_t, rounded, format,
-            reset);
+    fprintf(stderr, "\r%s%.2f %s%s\r\n", invert_t, rounded, format, reset);
   }
 }
 
 void initconf(void) {
+  conf.stdin = false;
   conf.process = true;
   conf.color = true;
   conf.lines = true;
@@ -98,10 +96,12 @@ int main(int argc, char *argv[]) {
         if (conf.has_read_stdin)
           clearstdin();
         conf.has_read_stdin = true;
+        conf.stdin = true;
         run(stdin, "stdin", tty);
         continue;
       }
 
+      conf.stdin = false;
       FILE *fp = fopen(argv[i], "rb");
       if (fp == NULL)
         die(argv[i]);
@@ -114,9 +114,11 @@ int main(int argc, char *argv[]) {
     }
 
     if (offset == argc) {
+      conf.stdin = true;
       run(stdin, "stdin", tty);
     }
   } else {
+    conf.stdin = true;
     run(stdin, "stdin", tty); // for piped-input or repl-like behavior
   }
 

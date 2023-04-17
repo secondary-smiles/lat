@@ -22,6 +22,7 @@ $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(LIB)
 
 $(NAME): $(OBJ)
+	@echo "--don't forget to set $(NAME)'s version--"
 	$(CC) -o $(BINDIR)/$@ $^ $(CFLAGS) $(LIB)
 
 .PHONY: prep

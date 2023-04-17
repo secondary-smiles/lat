@@ -5,7 +5,7 @@
 #include "types.h"
 #include "util.h"
 
-struct filedata readfile(FILE *fp) {
+struct filedata readfile(FILE *fp, bool isstdin) {
   struct filedata f;
 
   f.lc = 0;
@@ -14,6 +14,38 @@ struct filedata readfile(FILE *fp) {
 
   f.buf = NULL;
   f.lines = NULL;
+
+  if (isstdin) {
+    size_t bufsize = 1024;
+    f.buf = malloc(bufsize);
+    if (f.buf == NULL)
+      die("malloc");
+
+    char c;
+    while (fread(&c, 1, 1, fp) > 0) {
+      if (f.buflen == bufsize - 1) {
+        bufsize *= 2;
+
+        char *new_buf = realloc(f.buf, bufsize);
+        if (new_buf == NULL)
+          die("realloc");
+
+        f.buf = new_buf;
+      }
+      f.buf[f.buflen++] = c;
+    }
+
+    if (f.buflen < bufsize - 1) {
+      char *new_buf = realloc(f.buf, f.buflen + 1);
+      if (new_buf == NULL)
+        die("realloc");
+
+      f.buf = new_buf;
+    }
+    f.buf[f.buflen] = '\0';
+
+    return f;
+  }
 
   // expects to be at  beginning of file
   fseek(fp, 0, SEEK_END);

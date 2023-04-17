@@ -2,9 +2,10 @@
 #define ARG_H
 #include <stdbool.h>
 
-#define LAT_VERSION "0.4.0"
+#define LAT_VERSION "0.7.3"
 
 struct config {
+  bool stdin;
   bool process;
   bool color;
   bool lines;
