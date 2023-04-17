@@ -5,6 +5,7 @@
 #define LAT_VERSION "0.4.0"
 
 struct config {
+  bool process;
   bool color;
   bool lines;
   bool has_read_stdin;

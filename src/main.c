@@ -6,6 +6,8 @@
 
 #include "arg.h"
 #include "file.h"
+#include "process.h"
+#include "types.h"
 #include "util.h"
 
 #define INVERT_T "\x1b[7m"
@@ -15,7 +17,6 @@
 
 void run(FILE *fp, char *filename, bool tty) {
   const char *invert_t = conf.color ? INVERT_T : "";
-  const char *uinvert_t = conf.color ? UINVERT_T : "";
   const char *grey = conf.color ? GREY : "";
   const char *reset = conf.color ? RESET : "";
 
@@ -25,10 +26,13 @@ void run(FILE *fp, char *filename, bool tty) {
   if (tty) {
     char *addon = f.binary ? "<binary>" : "";
     fprintf(stderr, "\r\x1b[2K%s%s%s%s\r\n", invert_t, basename(filename),
-            addon, uinvert_t);
+            addon, reset);
   }
 
-  int lcpad = intlen(f.lc);
+  conf.process = (tty && !f.binary);
+  if (conf.process) { // file display processing
+    loadlines(&f);
+  }
 
   // f.lc = 0;
   // char pc = '\0';
@@ -53,24 +57,45 @@ void run(FILE *fp, char *filename, bool tty) {
   //   printf("%c", c);
   // }
 
-  printf("%s", f.buf);
+  // printf("%s", f.buf);
+
+  printf("%d - %d\n", conf.process, conf.lines);
+
+  if (conf.process) {
+    int linecount = 0;
+
+    for (int i = 0; i < f.lc; i++) {
+      if (conf.lines) {
+        char *padding = linepad(linecount, f.lc);
+        printf("%s%s%d:%s %s\n", grey, padding, i, reset, f.lines[i].buf);
+        free(padding);
+        linecount++;
+      } else {
+        printf("%s\n", f.lines[i].buf);
+      }
+
+      free(f.lines[i].buf);
+    }
+  } else {
+    printf("%s", f.buf);
+  }
+  free(f.buf);
 
   fflush(stdout); // prevent timing inconsistencies between stdout and stderr
 
   if (tty) {
     float rounded;
-    char *format = formatbytes(f.len, &rounded);
+    char *format = formatbytes(f.buflen, &rounded);
 
     // char *cnewline = c == '\n' ? "" : "\n";
     char *cnewline = "";
     fprintf(stderr, "\r%s%s%.2f %s%s\r\n", cnewline, invert_t, rounded, format,
-            uinvert_t);
+            reset);
   }
-
-  free(f.buf);
 }
 
 void initconf(void) {
+  conf.process = true;
   conf.color = true;
   conf.lines = true;
   conf.has_read_stdin = false;

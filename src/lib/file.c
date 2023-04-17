@@ -2,26 +2,29 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "file.h"
+#include "types.h"
 #include "util.h"
 
 struct filedata readfile(FILE *fp) {
   struct filedata f;
 
   f.lc = 0;
-  f.len = 0;
+  f.buflen = 0;
   f.binary = 0;
+
+  f.buf = NULL;
+  f.lines = NULL;
 
   // expects to be at  beginning of file
   fseek(fp, 0, SEEK_END);
-  f.len = ftell(fp);
+  f.buflen = ftell(fp);
   fseek(fp, 0, SEEK_SET);
 
-  f.buf = malloc(f.len);
+  f.buf = malloc(f.buflen);
   if (f.buf == NULL)
     die("malloc");
 
-  if (fread(f.buf, f.len, 1, fp) < 0) {
+  if (fread(f.buf, f.buflen, 1, fp) < 0) {
     die("fread");
   }
 
@@ -29,7 +32,7 @@ struct filedata readfile(FILE *fp) {
 
   // guess if printable
   // from https://github.com/sharkdp/content_inspector/blob/master/src/lib.rs
-  int testlen = f.len >= 64 ? 64 : f.len;
+  int testlen = f.buflen >= 64 ? 64 : f.buflen;
   char *testbuf[testlen];
   memcpy(testbuf, f.buf, testlen);
 
