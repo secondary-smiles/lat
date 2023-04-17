@@ -28,7 +28,7 @@ void loadlines(struct filedata *f) {
   for (size_t i = 0; i < f->buflen; i++) {
     char c = f->buf[i];
     if (c == '\n') {
-      if (offset < linelen) {
+      if (offset < linelen) { // shrink
         char *new_line = realloc(line, offset);
         if (new_line == NULL)
           die("realloc");
@@ -43,7 +43,6 @@ void loadlines(struct filedata *f) {
       line = malloc(linelen);
       if (line == NULL)
         die("malloc");
-
     } else {
       if (offset == linelen) {
         linelen *= 2;
@@ -58,6 +57,19 @@ void loadlines(struct filedata *f) {
       line[offset++] = c;
     }
   }
+
+  // capture last line
+  if (offset < linelen) { // shrink
+    char *new_line = realloc(line, offset);
+    if (new_line == NULL)
+      die("realloc");
+    line = new_line;
+  }
+
+  appendline(f, line, offset);
+  f->lc++;
+
+  free(line);
 }
 
 char *linepad(int lc, int total) {
