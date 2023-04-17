@@ -28,8 +28,6 @@ struct filedata readfile(FILE *fp) {
     die("fread");
   }
 
-  f.lc = 10000;
-
   // guess if printable
   // from https://github.com/sharkdp/content_inspector/blob/master/src/lib.rs
   int testlen = f.buflen >= 64 ? 64 : f.buflen;

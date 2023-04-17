@@ -50,7 +50,7 @@ void run(FILE *fp, char *filename, bool tty) {
       free(f.lines[i].buf);
     }
   } else {
-    printf("%s", f.buf);
+    fwrite(f.buf, 1, f.buflen, stdout);
   }
   free(f.buf);
 
