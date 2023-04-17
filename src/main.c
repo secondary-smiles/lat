@@ -34,33 +34,6 @@ void run(FILE *fp, char *filename, bool tty) {
     loadlines(&f);
   }
 
-  // f.lc = 0;
-  // char pc = '\0';
-  // char c;
-  // for (size_t i = 0; i < f.len; i++) {
-  //   c = f.buf[i];
-
-  //   if ((conf.lines && tty && !f.binary) && (pc == '\n' || i == 0)) {
-  //     f.lc++;
-
-  //     int padlen = lcpad - intlen(f.lc);
-  //     char padding[padlen];
-
-  //     if (padlen)
-  //       memset(padding, ' ', padlen);
-
-  //     fprintf(stderr, "\r%s%s%d:%s ", grey, padlen > 0 ? padding : "", f.lc,
-  //             reset); // padlen  < 1 causes undefined
-  //   }
-
-  //   pc = c;
-  //   printf("%c", c);
-  // }
-
-  // printf("%s", f.buf);
-
-  printf("%d - %d\n", conf.process, conf.lines);
-
   if (conf.process) {
     int linecount = 0;
 
