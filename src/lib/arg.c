@@ -1,8 +1,9 @@
-#include "arg.h"
-#include "util.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "arg.h"
+#include "util.h"
 
 #define LAT_USAGE "usage: lat [-cnbVh] [files..]"
 
@@ -41,7 +42,7 @@ void parselongarg(char *arg) {
     return;
   }
 
-  if (strcmp(arg, "--headers")) {
+  if (strcmp(arg, "--headers") == 0) {
     conf.headers = !conf.headers;
     return;
   }
