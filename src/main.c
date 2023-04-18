@@ -23,6 +23,10 @@ void run(FILE *fp, char *filename, bool tty) {
   struct filedata f;
   f = readfile(fp, conf.stdin);
 
+  if (conf.force_binary) {
+    f.binary = !f.binary;
+  }
+
   if (tty) {
     char *addon = f.binary ? "<binary>" : "";
     fprintf(stderr, "\r\x1b[2K%s%s%s%s\r\n", invert_t, basename(filename),
@@ -35,18 +39,18 @@ void run(FILE *fp, char *filename, bool tty) {
   }
 
   if (conf.process) {
-    int linecount = 0;
-
+    int linecount = 1;
     for (int i = 0; i < f.lc; i++) {
       if (conf.lines) {
         char *padding = linepad(linecount, f.lc);
-        printf("%s%s%d:%s %s\n", grey, padding, i + 1, reset, f.lines[i].buf);
+        printf("%s%s%d:%s ", grey, padding, i + 1, reset);
+        fwrite(f.lines[i].buf, 1, f.lines[i].len, stdout);
+        printf("\n");
         free(padding);
         linecount++;
       } else {
         printf("%s\n", f.lines[i].buf);
       }
-
       free(f.lines[i].buf);
     }
   } else {
@@ -66,6 +70,7 @@ void run(FILE *fp, char *filename, bool tty) {
 
 void initconf(void) {
   conf.stdin = false;
+  conf.force_binary = false;
   conf.process = true;
   conf.color = true;
   conf.lines = true;
