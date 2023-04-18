@@ -2,7 +2,7 @@
 #define ARG_H
 #include <stdbool.h>
 
-#define LAT_VERSION "0.9.2"
+#define LAT_VERSION "0.9.3"
 
 struct config {
   bool stdin;
@@ -10,7 +10,7 @@ struct config {
   bool color;
   bool lines;
   bool headers;
-  bool force_binary;
+  int force_binary;
   bool has_read_stdin;
 };
 

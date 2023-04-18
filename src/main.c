@@ -23,8 +23,10 @@ void run(FILE *fp, char *filename, bool tty) {
   struct filedata f;
   f = readfile(fp, conf.stdin);
 
-  if (conf.force_binary) {
-    f.binary = !f.binary;
+  if (conf.force_binary > 0) {
+    f.binary = true;
+  } else if (conf.force_binary == 0) {
+    f.binary = false;
   }
 
   conf.headers = conf.headers && tty; // tty still overrides user
@@ -72,7 +74,7 @@ void run(FILE *fp, char *filename, bool tty) {
 
 void initconf(void) {
   conf.stdin = false;
-  conf.force_binary = false;
+  conf.force_binary = -1;
   conf.has_read_stdin = false;
   conf.process = true;
   conf.headers = true;

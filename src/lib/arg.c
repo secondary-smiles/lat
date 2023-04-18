@@ -17,19 +17,26 @@ void help(void) {
          "\t-n, --lines\t toggle whether to print line numbers or not\n"
          "\t-t, --headers\t toggle whether to print file headers or not\n"
          "\t-b, --binary\t toggle whether to force the data to be treated as "
-         "binary or not\n"
+         "binary or not. see examples\n"
          "\t-V, --version\t show program version\n"
          "\t-h, --help\t display this help text\n\n");
   printf("environment:\n"
          "\tNO_COLOR, see https://no-color.org/\n\n");
-  printf("examples:\n"
-         "\tlat file1\n\t\t print the content of file1 witht default formatting\n"
-         "\tlat - file1\n\t\t read from stdin (the '-' character reads from stdin) "
-         "and then print the contents of stdin and file1\n"
-         "\tlat -nc file1 file2\n\t\t print the contents of file1 and file2 "
-         "without printing line numbers or colors\n"
-         "\tcurl example.com | lat\n\t\t pipe the results of 'curl example.com' "
-         "into lat\n");
+  printf(
+      "examples:\n"
+      "\tlat file1\n\t\t print the content of file1 witht default formatting\n"
+      "\tlat - file1\n\t\t read from stdin (the '-' character reads from "
+      "stdin) "
+      "and then print the contents of stdin and file1\n"
+      "\tlat --lines --color file1 file2\n\t\t print the contents of file1 and "
+      "file2 "
+      "without printing line numbers or colors\n"
+      "\tlat --binary file.txt\n\t\t force file.txt to be treated as a binary "
+      "file\n"
+      "\tlat -bb file.txt\n\t\t force file.txt to NOT be treated as a binary "
+      "file\n"
+      "\tcurl example.com | lat\n\t\t pipe the results of 'curl example.com' "
+      "into lat\n");
 }
 
 void version(void) {
@@ -62,7 +69,10 @@ void parselongarg(char *arg) {
   }
 
   if (strcmp(arg, "--binary") == 0) {
-    conf.force_binary = !conf.force_binary;
+    if (conf.force_binary < 0)
+      conf.force_binary = 1;
+    else
+      conf.force_binary = !conf.force_binary;
     return;
   }
 
@@ -96,7 +106,10 @@ void parseshortarg(char *arg) {
       conf.headers = !conf.headers;
       break;
     case 'b':
-      conf.force_binary = !conf.force_binary;
+      if (conf.force_binary < 0)
+        conf.force_binary = 1;
+      else
+        conf.force_binary = !conf.force_binary;
       break;
     case 'V':
       version();
