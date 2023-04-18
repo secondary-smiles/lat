@@ -5,10 +5,13 @@
 #include "arg.h"
 #include "util.h"
 
-#define LAT_USAGE "usage: lat [-cnbVh] [files..]"
+#define LAT_USAGE "usage: lat [-cntbVh] [file...]"
 
 void help(void) {
-  printf("%s\n", LAT_USAGE);
+  printf("lat | lazy cat - a cat clone with some quality-of-life "
+         "embelishments\n\n");
+
+  printf("%s\n\n", LAT_USAGE);
   printf("options:\n"
          "\t-c, --color\t toggle whether to print color or not\n"
          "\t-n, --lines\t toggle whether to print line numbers or not\n"
@@ -16,8 +19,17 @@ void help(void) {
          "\t-b, --binary\t toggle whether to force the data to be treated as "
          "binary or not\n"
          "\t-V, --version\t show program version\n"
-         "\t-h, --help\t display this help text\n");
-  printf("");
+         "\t-h, --help\t display this help text\n\n");
+  printf("environment:\n"
+         "\tNO_COLOR, see https://no-color.org/\n\n");
+  printf("examples:\n"
+         "\tlat file1\n\t\t print the content of file1 witht default formatting\n"
+         "\tlat - file1\n\t\t read from stdin (the '-' character reads from stdin) "
+         "and then print the contents of stdin and file1\n"
+         "\tlat -nc file1 file2\n\t\t print the contents of file1 and file2 "
+         "without printing line numbers or colors\n"
+         "\tcurl example.com | lat\n\t\t pipe the results of 'curl example.com' "
+         "into lat\n");
 }
 
 void version(void) {
@@ -26,8 +38,10 @@ void version(void) {
 
 struct config conf;
 void argerr(char *r, char *arg) {
-  printf("lat: %s '%s'\n", r, arg);
+  printf("lat: %s '%s'\n\n", r, arg);
+
   printf("%s\n", LAT_USAGE);
+  printf("run '--help' for more information\n");
   exit(EXIT_FAILURE);
 }
 
