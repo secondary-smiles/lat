@@ -19,7 +19,7 @@ void help(void) {
 }
 
 void version(void) {
-  printf("lat - v%s | %s:%s\n", LAT_VERSION, __DATE__, __TIME__);
+  printf("lat - v%s built %s at %s\n", LAT_VERSION, __DATE__, __TIME__);
 }
 
 struct config conf;
