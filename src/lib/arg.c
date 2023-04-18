@@ -11,6 +11,7 @@ void help(void) {
   printf("options:\n"
          "\t-c, --color\t toggle whether to print color or not\n"
          "\t-n, --lines\t toggle whether to print line numbers or not\n"
+         "\t-t, --headers\t toggle whether to print file headers or not\n"
          "\t-b, --binary\t toggle whether to force the data to be treated as "
          "binary or not\n"
          "\t-V, --version\t show program version\n"
@@ -37,6 +38,11 @@ void parselongarg(char *arg) {
 
   if (strcmp(arg, "--lines") == 0) {
     conf.lines = !conf.lines;
+    return;
+  }
+
+  if (strcmp(arg, "--headers")) {
+    conf.headers = !conf.headers;
     return;
   }
 
@@ -70,6 +76,9 @@ void parseshortarg(char *arg) {
       break;
     case 'n':
       conf.lines = !conf.lines;
+      break;
+    case 't':
+      conf.headers = !conf.headers;
       break;
     case 'b':
       conf.force_binary = !conf.force_binary;

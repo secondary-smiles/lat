@@ -27,7 +27,9 @@ void run(FILE *fp, char *filename, bool tty) {
     f.binary = !f.binary;
   }
 
-  if (tty) {
+  conf.headers = conf.headers && tty; // tty still overrides user
+
+  if (conf.headers) {
     char *addon = f.binary ? "<binary>" : "";
     fprintf(stderr, "\r\x1b[2K%s%s%s%s\r\n", invert_t, basename(filename),
             addon, reset);
@@ -60,7 +62,7 @@ void run(FILE *fp, char *filename, bool tty) {
 
   fflush(stdout); // prevent timing inconsistencies between stdout and stderr
 
-  if (tty) {
+  if (conf.headers) {
     float rounded;
     char *format = formatbytes(f.buflen, &rounded);
 
@@ -71,10 +73,11 @@ void run(FILE *fp, char *filename, bool tty) {
 void initconf(void) {
   conf.stdin = false;
   conf.force_binary = false;
+  conf.has_read_stdin = false;
   conf.process = true;
+  conf.headers = true;
   conf.color = true;
   conf.lines = true;
-  conf.has_read_stdin = false;
 }
 
 void clearstdin(void) {

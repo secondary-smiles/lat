@@ -9,6 +9,7 @@ struct config {
   bool process;
   bool color;
   bool lines;
+  bool headers;
   bool force_binary;
   bool has_read_stdin;
 };
