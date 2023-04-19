@@ -42,11 +42,11 @@ void run(FILE *fp, char *filename, bool tty) {
 
   if (conf.headers) {
     char *addon = f.binary ? "<binary>" : "";
-    if (!conf.pager)
+    if (conf.pager)
+      fprintf(err, "%s%s%s%s\r\n", invert_t, basename(filename), addon, reset);
+    else
       fprintf(err, "\x1b[2K\r%s%s%s%s\r\n", invert_t, basename(filename), addon,
               reset);
-    else
-      fprintf(err, "%s%s%s%s\r\n", invert_t, basename(filename), addon, reset);
   }
 
   conf.process = (tty && !f.binary);
@@ -147,6 +147,7 @@ int main(int argc, char *argv[]) {
       run(fp, argv[i], tty);
       fclose(fp);
       if (tty && (i + 1 != argc)) {
+        printf("offset: %d argc: %d\n", i, argc);
         fprintf(err, "\r\n"); // separate concurrent files in tty
       }
     }

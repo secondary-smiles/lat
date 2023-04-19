@@ -5,6 +5,23 @@
 #include "types.h"
 #include "util.h"
 
+bool isbinary(struct filedata *f) {
+
+  // guess if printable
+  // from https://github.com/sharkdp/content_inspector/blob/master/src/lib.rs
+  int testlen = f->buflen >= 64 ? 64 : f->buflen;
+  char *testbuf[testlen];
+  memcpy(testbuf, f->buf, testlen);
+
+  char *result = memchr(testbuf, 0x00, testlen);
+
+  if (result) {
+      return true;
+  } else {
+      return false;
+  }
+}
+
 struct filedata readfile(FILE *fp, bool isstdin) {
   struct filedata f;
 
@@ -44,6 +61,8 @@ struct filedata readfile(FILE *fp, bool isstdin) {
     }
     f.buf[f.buflen] = '\0';
 
+    f.binary = isbinary(&f); 
+
     return f;
   }
 
@@ -60,19 +79,7 @@ struct filedata readfile(FILE *fp, bool isstdin) {
     die("fread");
   }
 
-  // guess if printable
-  // from https://github.com/sharkdp/content_inspector/blob/master/src/lib.rs
-  int testlen = f.buflen >= 64 ? 64 : f.buflen;
-  char *testbuf[testlen];
-  memcpy(testbuf, f.buf, testlen);
-
-  char *result = memchr(testbuf, 0x00, testlen);
-
-  if (result) {
-    f.binary = 1;
-  } else {
-    f.binary = 0;
-  }
+  f.binary = isbinary(&f); 
 
   return f;
 }
