@@ -13,14 +13,15 @@ void help(void) {
 
   printf("%s\n\n", LAT_USAGE);
   printf("options:\n"
-         "\t-c, --color\t toggle whether to print color or not\n"
-         "\t-n, --lines\t toggle whether to print line numbers or not\n"
-         "\t-t, --headers\t toggle whether to print file headers or not\n"
-         "\t-b, --binary\t toggle whether to force the data to be treated as "
-         "binary or not. see examples\n"
-         "\t-p, --pager\t print file a pager (less)\n"
+         "\t-c, --color\t toggle color\n"
+         "\t-n, --lines\t toggle line numbers\n"
+         "\t-t, --headers\t toggle file info headers\n"
+         "\t-b, --binary\t toggle binary mode, -b forces binary and -bb forces "
+         "NOT binary\n"
+         "\t-p, --pager\t print file with the pager (uses less)\n"
          "\t-V, --version\t show program version\n"
-         "\t-h, --help\t display this help text (--help shows additional info)\n\n");
+         "\t-h, --help\t display this help text (--help shows additional "
+         "info)\n\n");
   printf("environment:\n"
          "\tNO_COLOR, see https://no-color.org/\n\n");
 }
@@ -28,8 +29,9 @@ void help(void) {
 void examples(void) {
   printf(
       "examples:\n"
-      "\tlat file1\n\t\t print the content of file1 witht default formatting\n"
-      "\tlat - file1\n\t\t read from stdin (the '-' character reads from "
+      "\tlat file1\n\t\t print the contents of file1 with the default "
+      "formatting\n"
+      "\tlat - file1\n\t\t read from stdin (the '-' flag reads from "
       "stdin) "
       "and then print the contents of stdin and file1\n"
       "\tlat -nc file1 file2\n\t\t print the contents of file1 and "

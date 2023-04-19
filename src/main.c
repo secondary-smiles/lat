@@ -42,8 +42,11 @@ void run(FILE *fp, char *filename, bool tty) {
 
   if (conf.headers) {
     char *addon = f.binary ? "<binary>" : "";
-    fprintf(err, "\x1b[2K\r%s%s%s%s\r\n", invert_t, basename(filename), addon,
-            reset);
+    if (!conf.pager)
+      fprintf(err, "\x1b[2K\r%s%s%s%s\r\n", invert_t, basename(filename), addon,
+              reset);
+    else
+      fprintf(err, "%s%s%s%s\r\n", invert_t, basename(filename), addon, reset);
   }
 
   conf.process = (tty && !f.binary);
@@ -68,11 +71,13 @@ void run(FILE *fp, char *filename, bool tty) {
     }
   } else {
     fwrite(f.buf, 1, f.buflen, st);
+    fflush(st);
     fwrite("\n", 1, 1, err);
   }
   free(f.buf);
 
   fflush(st); // prevent timing inconsistencies between st and err
+  fflush(err);
 
   if (conf.headers) {
     float rounded;
