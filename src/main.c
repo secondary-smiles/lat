@@ -15,6 +15,9 @@
 #define GREY "\x1b[90m"
 #define RESET "\x1b[0m"
 
+FILE *st;
+FILE *err;
+
 void run(FILE *fp, char *filename, bool tty) {
   const char *invert_t = conf.color ? INVERT_T : "";
   const char *grey = conf.color ? GREY : "";
@@ -23,18 +26,24 @@ void run(FILE *fp, char *filename, bool tty) {
   struct filedata f;
   f = readfile(fp, conf.stdin);
 
+  if (conf.pager) {
+    st = popen("less", "w");
+    err = st;
+
+    if (st == NULL)
+      die("popen 'less'");
+  }
+
   if (conf.force_binary > 0) {
     f.binary = true;
   } else if (conf.force_binary == 0) {
     f.binary = false;
   }
 
-  conf.headers = conf.headers && tty; // tty still overrides user
-
   if (conf.headers) {
     char *addon = f.binary ? "<binary>" : "";
-    fprintf(stderr, "\r\x1b[2K%s%s%s%s\r\n", invert_t, basename(filename),
-            addon, reset);
+    fprintf(err, "\x1b[2K\r%s%s%s%s\r\n", invert_t, basename(filename), addon,
+            reset);
   }
 
   conf.process = (tty && !f.binary);
@@ -47,35 +56,44 @@ void run(FILE *fp, char *filename, bool tty) {
     for (int i = 0; i < f.lc; i++) {
       if (conf.lines) {
         char *padding = linepad(linecount, f.lc);
-        printf("%s%s%d:%s ", grey, padding, i + 1, reset);
-        fwrite(f.lines[i].buf, 1, f.lines[i].len, stdout);
-        printf("\n");
+        fprintf(st, "%s%s%d│%s ", grey, padding, i + 1, reset);
+        fwrite(f.lines[i].buf, 1, f.lines[i].len, st);
+        fprintf(st, "\n");
         free(padding);
         linecount++;
       } else {
-        printf("%s\n", f.lines[i].buf);
+        fprintf(st, "%s\n", f.lines[i].buf);
       }
       free(f.lines[i].buf);
     }
   } else {
-    fwrite(f.buf, 1, f.buflen, stdout);
+    fwrite(f.buf, 1, f.buflen, st);
+    fwrite("\n", 1, 1, err);
   }
   free(f.buf);
 
-  fflush(stdout); // prevent timing inconsistencies between stdout and stderr
+  fflush(st); // prevent timing inconsistencies between st and err
 
   if (conf.headers) {
     float rounded;
     char *format = formatbytes(f.buflen, &rounded);
 
-    fprintf(stderr, "\r%s%.2f %s%s\r\n", invert_t, rounded, format, reset);
+    fprintf(err, "%s%.2f %s%s\r\n", invert_t, rounded, format, reset);
+  }
+
+  if (conf.pager) {
+    pclose(st); // err is already the same as st
+
+    st = stdout;
+    err = stderr;
   }
 }
 
 void initconf(void) {
-  conf.stdin = false;
   conf.force_binary = -1;
+  conf.stdin = false;
   conf.has_read_stdin = false;
+  conf.pager = false;
   conf.process = true;
   conf.headers = true;
   conf.color = true;
@@ -91,6 +109,9 @@ void clearstdin(void) {
 int main(int argc, char *argv[]) {
   initconf();
 
+  st = stdout;
+  err = stderr;
+
   // init no_color first so that args take priority
   char *no_color = getenv("NO_COLOR");
 
@@ -101,6 +122,9 @@ int main(int argc, char *argv[]) {
   bool tty = isatty(STDOUT_FILENO);
   if (argc > 1) {
     int offset = parseargs(argc, argv);
+    conf.headers = conf.headers && tty; // tty still overrides user
+    conf.pager = conf.pager && tty;
+
     for (int i = offset; i < argc; i++) {
       if (*argv[i] == '-') {
         if (conf.has_read_stdin)
@@ -117,9 +141,8 @@ int main(int argc, char *argv[]) {
         die(argv[i]);
       run(fp, argv[i], tty);
       fclose(fp);
-
       if (tty && (i + 1 != argc)) {
-        fprintf(stderr, "\r\n"); // separate concurrent files in tty
+        fprintf(err, "\r\n"); // separate concurrent files in tty
       }
     }
 

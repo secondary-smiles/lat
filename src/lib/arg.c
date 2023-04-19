@@ -18,23 +18,27 @@ void help(void) {
          "\t-t, --headers\t toggle whether to print file headers or not\n"
          "\t-b, --binary\t toggle whether to force the data to be treated as "
          "binary or not. see examples\n"
+         "\t-p, --pager\t print file a pager (less)\n"
          "\t-V, --version\t show program version\n"
-         "\t-h, --help\t display this help text\n\n");
+         "\t-h, --help\t display this help text (--help shows additional info)\n\n");
   printf("environment:\n"
          "\tNO_COLOR, see https://no-color.org/\n\n");
+}
+
+void examples(void) {
   printf(
       "examples:\n"
       "\tlat file1\n\t\t print the content of file1 witht default formatting\n"
       "\tlat - file1\n\t\t read from stdin (the '-' character reads from "
       "stdin) "
       "and then print the contents of stdin and file1\n"
-      "\tlat --lines --color file1 file2\n\t\t print the contents of file1 and "
+      "\tlat -nc file1 file2\n\t\t print the contents of file1 and "
       "file2 "
       "without printing line numbers or colors\n"
       "\tlat --binary file.txt\n\t\t force file.txt to be treated as a binary "
       "file\n"
-      "\tlat -bb file.txt\n\t\t force file.txt to NOT be treated as a binary "
-      "file\n"
+      "\tlat -bb --pager file.txt\n\t\t force file.txt to NOT be treated "
+      "as a binary file and print it in the pager\n"
       "\tcurl example.com | lat\n\t\t pipe the results of 'curl example.com' "
       "into lat\n");
 }
@@ -76,8 +80,13 @@ void parselongarg(char *arg) {
     return;
   }
 
+  if (strcmp(arg, "--pager") == 0) {
+    conf.pager = !conf.pager;
+  }
+
   if (strcmp(arg, "--help") == 0) {
     help();
+    examples();
     exit(EXIT_SUCCESS);
     return;
   }
@@ -110,6 +119,9 @@ void parseshortarg(char *arg) {
         conf.force_binary = 1;
       else
         conf.force_binary = !conf.force_binary;
+      break;
+    case 'p':
+      conf.pager = !conf.pager;
       break;
     case 'V':
       version();
