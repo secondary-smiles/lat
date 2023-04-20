@@ -87,10 +87,12 @@ void parselongarg(char *arg) {
 
   if (strcmp(arg, "--literal") == 0) {
     conf.literal = !conf.literal;
+    return;
   }
 
   if (strcmp(arg, "--pager") == 0) {
     conf.pager = !conf.pager;
+    return;
   }
 
   if (strcmp(arg, "--help") == 0) {
