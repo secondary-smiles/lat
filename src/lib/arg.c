@@ -9,7 +9,7 @@
 
 void help(void) {
   printf("lat | lazy cat - a cat clone with some quality-of-life "
-         "embelishments\n\n");
+         "embellishments\n\n");
 
   printf("%s\n\n", LAT_USAGE);
   printf("options:\n"
