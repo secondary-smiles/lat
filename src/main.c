@@ -34,6 +34,10 @@ void run(FILE *fp, char *filename, bool tty) {
       die("popen 'less'");
   }
 
+  if (conf.literal) {
+    err = st;
+  }
+
   if (conf.force_binary > 0) {
     f.binary = true;
   } else if (conf.force_binary == 0) {
@@ -42,11 +46,11 @@ void run(FILE *fp, char *filename, bool tty) {
 
   if (conf.headers) {
     char *addon = f.binary ? "<binary>" : "";
-    if (conf.pager)
-      fprintf(err, "%s%s%s%s\r\n", invert_t, basename(filename), addon, reset);
-    else
-      fprintf(err, "\x1b[2K\r%s%s%s%s\r\n", invert_t, basename(filename), addon,
+    if (conf.stdin && !conf.pager)
+      fprintf(err, "\x1b[2K\r%s%s%s%s\n", invert_t, basename(filename), addon,
               reset);
+    else
+      fprintf(err, "%s%s%s%s\n", invert_t, basename(filename), addon, reset);
   }
 
   conf.process = (tty && !f.binary);
@@ -83,14 +87,11 @@ void run(FILE *fp, char *filename, bool tty) {
     float rounded;
     char *format = formatbytes(f.buflen, &rounded);
 
-    fprintf(err, "%s%.2f %s%s\r\n", invert_t, rounded, format, reset);
+    fprintf(err, "%s%.2f %s%s\n", invert_t, rounded, format, reset);
   }
 
   if (conf.pager) {
     pclose(st); // err is already the same as st
-
-    st = stdout;
-    err = stderr;
   }
 }
 
@@ -99,6 +100,7 @@ void initconf(void) {
   conf.stdin = false;
   conf.has_read_stdin = false;
   conf.pager = false;
+  conf.literal = false;
   conf.process = true;
   conf.headers = true;
   conf.color = true;
@@ -125,8 +127,10 @@ int main(int argc, char *argv[]) {
   }
 
   bool tty = isatty(STDOUT_FILENO);
+
   if (argc > 1) {
     int offset = parseargs(argc, argv);
+    tty = tty || conf.literal;
     conf.headers = conf.headers && tty; // tty still overrides user
     conf.pager = conf.pager && tty;
 
@@ -148,7 +152,7 @@ int main(int argc, char *argv[]) {
       fclose(fp);
       if (tty && (i + 1 != argc)) {
         printf("offset: %d argc: %d\n", i, argc);
-        fprintf(err, "\r\n"); // separate concurrent files in tty
+        fprintf(err, "\n"); // separate concurrent files in tty
       }
     }
 

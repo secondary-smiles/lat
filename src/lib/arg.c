@@ -5,7 +5,7 @@
 #include "arg.h"
 #include "util.h"
 
-#define LAT_USAGE "usage: lat [-cntbpVh] [file...]"
+#define LAT_USAGE "usage: lat [-cntblpVh] [file...]"
 
 void help(void) {
   printf("lat | lazy cat - a cat clone with some quality-of-life "
@@ -18,6 +18,7 @@ void help(void) {
          "\t-t, --headers\t toggle file info headers\n"
          "\t-b, --binary\t toggle binary mode, -b forces binary and -bb forces "
          "NOT binary\n"
+         "\t-l, --literal\t print everything to stdout (or equivalent)\n"
          "\t-p, --pager\t print file with the pager (uses less)\n"
          "\t-V, --version\t show program version\n"
          "\t-h, --help\t display this help text (--help shows additional "
@@ -42,7 +43,9 @@ void examples(void) {
       "\tlat -bb --pager file.txt\n\t\t force file.txt to NOT be treated "
       "as a binary file and print it in the pager\n"
       "\tcurl example.com | lat\n\t\t pipe the results of 'curl example.com' "
-      "into lat\n");
+      "into lat\n"
+			"\tfzf --preview 'lat -l {}'\n\t\t use lat as the file viewer in fzf\n"
+  );
 }
 
 void version(void) {
@@ -80,6 +83,10 @@ void parselongarg(char *arg) {
     else
       conf.force_binary = !conf.force_binary;
     return;
+  }
+
+  if (strcmp(arg, "--literal") == 0) {
+    conf.literal = !conf.literal;
   }
 
   if (strcmp(arg, "--pager") == 0) {
@@ -121,6 +128,9 @@ void parseshortarg(char *arg) {
         conf.force_binary = 1;
       else
         conf.force_binary = !conf.force_binary;
+      break;
+    case 'l':
+      conf.literal = !conf.literal;
       break;
     case 'p':
       conf.pager = !conf.pager;

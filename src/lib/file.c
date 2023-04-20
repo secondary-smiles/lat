@@ -16,9 +16,9 @@ bool isbinary(struct filedata *f) {
   char *result = memchr(testbuf, 0x00, testlen);
 
   if (result) {
-      return true;
+    return true;
   } else {
-      return false;
+    return false;
   }
 }
 
@@ -61,7 +61,7 @@ struct filedata readfile(FILE *fp, bool isstdin) {
     }
     f.buf[f.buflen] = '\0';
 
-    f.binary = isbinary(&f); 
+    f.binary = isbinary(&f);
 
     return f;
   }
@@ -79,7 +79,7 @@ struct filedata readfile(FILE *fp, bool isstdin) {
     die("fread");
   }
 
-  f.binary = isbinary(&f); 
+  f.binary = isbinary(&f);
 
   return f;
 }
