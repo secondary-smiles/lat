@@ -1,6 +1,8 @@
 # lat
 > lat | lazy cat - a cat clone with some quality-of-life embellishments
 
+[![Build](https://github.com/secondary-smiles/lat/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/secondary-smiles/lat/actions/workflows/c-cpp.yml)
+
 ## About
 
 `lat` is a solution to a problem that doesn't exist. It's the awkward middle child in-between `cat` and `bat`. It was created because the author didn't want to have to configure `bat` just to get decent file printing, but wanted a little more control than `cat` offered.
@@ -34,9 +36,25 @@
 
 as you can see, the extra features do take their toll on performance, but overall, `lat` is generally nearly on-par with `cat`, and *far* faster than `bat`.
 
+## Install
+`lat` is not yet at a stable version (`v1.0.0`), so it is not on any package managers. 
+
+```bash
+git clone https://github.com/secondary-smiles/lat.git
+
+cd lat
+
+make prep
+make
+
+./build/lat -V
+
+# now add lat to your $PATH/do whatever you want with the binary
+```
+
 ## Use
 
-`lat` can, for the most part, be a direct drop in for `cat`, however it really shines when embedded into another program. For example, in `fzf` `lat` makes an excellent viewer with the command `fzf --command lat -l {}`.
+`lat` can, for the most part, be a direct drop in for `cat`. However it really shines when embedded into another program. For example, in `fzf`, `lat` makes an excellent viewer with the command `fzf --command lat -l {}`.
 
 ![Using lat in fzf](social/render/fzf_embed.gif)
 
@@ -55,6 +73,7 @@ int main(void) {
   pclose(st);
 }
 ```
+> UPDATE: this feature is possible, however the data is only printed upon `pclose`.
 
 ### Features and Flags
 
