@@ -13,6 +13,7 @@ struct config {
   int force_binary;
   bool literal;
   bool pager;
+  char *name;
   bool has_read_stdin;
 };
 
