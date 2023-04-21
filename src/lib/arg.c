@@ -1,30 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "arg.h"
 #include "util.h"
 
-#define LAT_USAGE "usage: lat [-cntblpVh] [file...]"
+#define LAT_SHORT_ARGS "cltbrpn:Vh"
+#define LAT_USAGE "usage: lat [-cltbrpnVh] [file...]"
+
+struct config conf;
 
 void help(void) {
   printf("lat | lazy cat - a cat clone with some quality-of-life "
          "embellishments\n\n");
 
   printf("%s\n\n", LAT_USAGE);
-  printf("options:\n"
-         "\t-c, --color\t toggle color\n"
-         "\t-n, --lines\t toggle line numbers\n"
-         "\t-t, --headers\t toggle file info headers\n"
-         "\t-b, --binary\t toggle binary mode, -b forces binary and -bb forces "
-         "NOT binary\n"
-         "\t-l, --literal\t print everything to stdout (or equivalent)\n"
-         "\t-p, --pager\t print file with the pager (uses less)\n"
-         "\t-V, --version\t show program version\n"
-         "\t-h, --help\t display this help text (--help shows additional "
-         "info)\n\n");
+  printf(
+      "options:\n"
+      "\t-c\t toggle color\n"
+      "\t-l\t toggle line numbers\n"
+      "\t-t\t toggle file info headers\n"
+      "\t-b\t toggle binary mode, -b forces binary and -bb forces NOT binary\n"
+      "\t-r\t print everything to stdout (or equivalent)\n"
+      "\t-p\t print file with the pager (uses less)\n"
+      "\t-n\t set the name of the file in the title\n"
+      "\t-V\t show program version\n"
+      "\t-h\t display this help text\n\n");
   printf("environment:\n"
-         "\tNO_COLOR, see https://no-color.org/\n\n");
+         "\tNO_COLOR, see https://no-color.org/\n");
 }
 
 void examples(void) {
@@ -44,82 +48,27 @@ void examples(void) {
       "as a binary file and print it in the pager\n"
       "\tcurl example.com | lat\n\t\t pipe the results of 'curl example.com' "
       "into lat\n"
-			"\tfzf --preview 'lat -l {}'\n\t\t use lat as the file viewer in fzf\n"
-  );
+      "\tfzf --preview 'lat -l {}'\n\t\t use lat as the file viewer in fzf\n");
 }
 
 void version(void) {
   printf("lat - v%s built %s at %s\n", LAT_VERSION, __DATE__, __TIME__);
 }
 
-struct config conf;
-void argerr(char *r, char *arg) {
-  printf("lat: %s '%s'\n\n", r, arg);
-
-  printf("%s\n", LAT_USAGE);
+void argerr(void) {
+  printf("\n%s\n", LAT_USAGE);
   printf("run '--help' for more information\n");
   exit(EXIT_FAILURE);
 }
 
-void parselongarg(char *arg) {
-  if (strcmp(arg, "--color") == 0) {
-    conf.color = !conf.color;
-    return;
-  }
-
-  if (strcmp(arg, "--lines") == 0) {
-    conf.lines = !conf.lines;
-    return;
-  }
-
-  if (strcmp(arg, "--headers") == 0) {
-    conf.headers = !conf.headers;
-    return;
-  }
-
-  if (strcmp(arg, "--binary") == 0) {
-    if (conf.force_binary < 0)
-      conf.force_binary = 1;
-    else
-      conf.force_binary = !conf.force_binary;
-    return;
-  }
-
-  if (strcmp(arg, "--literal") == 0) {
-    conf.literal = !conf.literal;
-    return;
-  }
-
-  if (strcmp(arg, "--pager") == 0) {
-    conf.pager = !conf.pager;
-    return;
-  }
-
-  if (strcmp(arg, "--help") == 0) {
-    help();
-    examples();
-    exit(EXIT_SUCCESS);
-    return;
-  }
-
-  if (strcmp(arg, "--version") == 0) {
-    version();
-    exit(EXIT_SUCCESS);
-    return;
-  }
-
-  argerr("unrecognized arg", arg);
-}
-
-void parseshortarg(char *arg) {
-  size_t i = 1;
-  while (arg[i] != '\0') {
-    char c = arg[i];
-    switch (c) {
+int parseargs(int argc, char *argv[]) {
+  char opt;
+  while ((opt = getopt(argc, argv, LAT_SHORT_ARGS)) != -1) {
+    switch (opt) {
     case 'c':
       conf.color = !conf.color;
       break;
-    case 'n':
+    case 'l':
       conf.lines = !conf.lines;
       break;
     case 't':
@@ -131,11 +80,14 @@ void parseshortarg(char *arg) {
       else
         conf.force_binary = !conf.force_binary;
       break;
-    case 'l':
+    case 'r':
       conf.literal = !conf.literal;
       break;
     case 'p':
       conf.pager = !conf.pager;
+      break;
+    case 'n':
+      conf.name = optarg;
       break;
     case 'V':
       version();
@@ -145,39 +97,10 @@ void parseshortarg(char *arg) {
       help();
       exit(EXIT_SUCCESS);
       break;
-    default: {
-      char *str = malloc(2);
-      str[0] = c;
-      str[1] = '\0';
-      argerr("unrecognized flag", str);
-      free(str);
+    default:
+      argerr();
       break;
     }
-    }
-    i++;
   }
-}
-
-int parseargs(int argc, char *argv[]) {
-  int i;
-  for (i = 1; i < argc; i++) { // offset for argv[0]
-    char *arg = argv[i];
-
-    if (arg[0] == '-' && arg[1] == '\0') {
-      return i;
-    }
-
-    if (arg[0] == '-') {
-      if (arg[1] == '-') {
-        parselongarg(arg);
-        continue;
-      }
-
-      parseshortarg(arg);
-    } else {
-      return i;
-    }
-  }
-
-  return i;
+  return optind;
 }

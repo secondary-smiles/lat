@@ -1,7 +1,5 @@
-#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 
 #include "arg.h"
@@ -44,13 +42,13 @@ void run(FILE *fp, char *filename, bool tty) {
     f.binary = false;
   }
 
+  char *name = conf.name == NULL ? filename : conf.name;
   if (conf.headers) {
     char *addon = f.binary ? "<binary>" : "";
     if (conf.stdin && !conf.pager)
-      fprintf(err, "\x1b[2K\r%s%s%s%s\n", invert_t, basename(filename), addon,
-              reset);
+      fprintf(err, "\x1b[2K\r%s%s%s%s\n", invert_t, name, addon, reset);
     else
-      fprintf(err, "%s%s%s%s\n", invert_t, basename(filename), addon, reset);
+      fprintf(err, "%s%s%s%s\n", invert_t, name, addon, reset);
   }
 
   conf.process = (tty && !f.binary);
@@ -101,10 +99,13 @@ void initconf(void) {
   conf.has_read_stdin = false;
   conf.pager = false;
   conf.literal = false;
+
   conf.process = true;
   conf.headers = true;
   conf.color = true;
   conf.lines = true;
+
+  conf.name = NULL;
 }
 
 void clearstdin(void) {
@@ -141,6 +142,10 @@ int main(int argc, char *argv[]) {
         conf.has_read_stdin = true;
         conf.stdin = true;
         run(stdin, "stdin", tty);
+        if (tty && (i + 1 != argc)) {
+          fprintf(err, "\n"); // separate concurrent files in tty
+        }
+
         continue;
       }
 
@@ -151,7 +156,6 @@ int main(int argc, char *argv[]) {
       run(fp, argv[i], tty);
       fclose(fp);
       if (tty && (i + 1 != argc)) {
-        printf("offset: %d argc: %d\n", i, argc);
         fprintf(err, "\n"); // separate concurrent files in tty
       }
     }
