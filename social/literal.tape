@@ -10,7 +10,6 @@ Set FontSize 32
 Set Width 2400
 Set Height 1200
 Set TypingSpeed 0.2
-Set PlaybackSpeed 0.5
 
 Type "lat src/main.c > example.c"
 Sleep 2s
@@ -30,7 +29,7 @@ Enter
 
 Sleep 2s
 
-Type "lat --literal src/main.c > example.c"
+Type "lat -r src/main.c > example.c"
 Sleep 2s
 Enter
 
