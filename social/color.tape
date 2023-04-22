@@ -10,7 +10,6 @@ Set FontSize 32
 Set Width 2400
 Set Height 1200
 Set TypingSpeed 0.2
-Set PlaybackSpeed 0.5
 
 Type "lat src/main.c"
 Sleep 2s
@@ -24,7 +23,7 @@ Enter
 
 Sleep 2s
 
-Type "lat --color src/main.c"
+Type "lat -c src/main.c"
 Sleep 2s
 Enter
 

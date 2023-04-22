@@ -1,5 +1,5 @@
 Require lat
-Output social/render/headers.gif
+Output social/render/name.gif
 
 Set Theme "Gruvbox Dark"
 Set WindowBar Rings
@@ -11,22 +11,27 @@ Set Width 2400
 Set Height 1200
 Set TypingSpeed 0.2
 
-Type "lat src/main.c"
+Type "lat"
 Sleep 2s
 Enter
 
-Sleep 5s
+Type "hello, world!"
+Enter
+Sleep 3s
 
-Type "clear"
-Sleep 1s
+Ctrl+d
+
+Sleep 3s
+
+Type "lat -n "custom name" src/main.c"
+Sleep 2s
 Enter
 
-Sleep 2s
-
-Type "lat -t src/main.c"
-Sleep 2s
+Type "hello, world!"
 Enter
+Sleep 3s
 
-Sleep 5s
+Ctrl+d
 
+Sleep 4s
 

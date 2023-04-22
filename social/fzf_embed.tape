@@ -11,7 +11,7 @@ Set Width 2400
 Set Height 1200
 Set TypingSpeed 0.2
 
-Type "fzf --preview 'lat -l {}'"
+Type "fzf --preview 'lat -r {}'"
 Sleep 1s
 
 Enter
@@ -32,49 +32,8 @@ Sleep 3s
 Backspace 7
 Sleep 2s
 
-Up
-Sleep 3s
+Up@3s 15
 
-Up 
-Sleep 3s
-
-Up
-Sleep 3s
-
-Up
-Sleep 3s
-
-Up
-Sleep 3s
-
-Up
-Sleep 3s
-
-Up
-Sleep 3s
-
-Up
-Sleep 3s
-
-Up
-Sleep 3s
-
-Up
-Sleep 3s
-
-Up
-Sleep 3s
-
-Up
-Sleep 3s
-
-Up
-Sleep 3s
-
-Up
-Sleep 3s
-
-Up
 Sleep 3s
 
 Enter
