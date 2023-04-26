@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/ioctl.h>
+#include <stdnoreturn.h>
 
-void die(const char *message) {
+noreturn void die(const char *message) {
   perror(message);
   exit(EXIT_FAILURE);
 }

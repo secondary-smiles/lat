@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
+#include <stdnoreturn.h>
 
 #include "arg.h"
 #include "util.h"
@@ -18,46 +18,26 @@ void help(void) {
   printf("%s\n\n", LAT_USAGE);
   printf(
       "options:\n"
-      "\t-c\t toggle color\n"
-      "\t-l\t toggle line numbers\n"
-      "\t-t\t toggle file info headers\n"
-      "\t-b\t toggle binary mode, -b forces binary and -bb forces NOT binary\n"
-      "\t-r\t print everything to stdout (or equivalent)\n"
-      "\t-p\t print file with the pager (uses less)\n"
-      "\t-n\t set the name of the file in the title\n"
-      "\t-V\t show program version\n"
-      "\t-h\t display this help text\n\n");
+      "\t-c\t\t toggle color\n"
+      "\t-l\t\t toggle line numbers\n"
+      "\t-t\t\t toggle file info headers\n"
+      "\t-b\t\t set binary mode, -b forces binary and -bb forces NOT binary\n"
+      "\t-r\t\t print everything (headers, line numbers, etc.) to stdout (or equivalent)\n"
+      "\t-p\t\t print file with the pager (uses less)\n"
+      "\t-n <name>\t\t manually set the name of the file in the title\n"
+      "\t-V\t\t show program version\n"
+      "\t-h\t\t display this help text\n\n");
   printf("environment:\n"
          "\tNO_COLOR, see https://no-color.org/\n");
-}
-
-void examples(void) {
-  printf(
-      "examples:\n"
-      "\tlat file1\n\t\t print the contents of file1 with the default "
-      "formatting\n"
-      "\tlat - file1\n\t\t read from stdin (the '-' flag reads from "
-      "stdin) "
-      "and then print the contents of stdin and file1\n"
-      "\tlat -nc file1 file2\n\t\t print the contents of file1 and "
-      "file2 "
-      "without printing line numbers or colors\n"
-      "\tlat --binary file.txt\n\t\t force file.txt to be treated as a binary "
-      "file\n"
-      "\tlat -bb --pager file.txt\n\t\t force file.txt to NOT be treated "
-      "as a binary file and print it in the pager\n"
-      "\tcurl example.com | lat\n\t\t pipe the results of 'curl example.com' "
-      "into lat\n"
-      "\tfzf --preview 'lat -l {}'\n\t\t use lat as the file viewer in fzf\n");
 }
 
 void version(void) {
   printf("lat - v%s built %s at %s\n", LAT_VERSION, __DATE__, __TIME__);
 }
 
-void argerr(void) {
+noreturn void argerr(void) {
   printf("\n%s\n", LAT_USAGE);
-  printf("run '--help' for more information\n");
+  printf("run '-h' for more information\n");
   exit(EXIT_FAILURE);
 }
 
