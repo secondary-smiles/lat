@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <stdnoreturn.h>
+#include <unistd.h>
 
 #include "arg.h"
 #include "util.h"
 
-#define LAT_SHORT_ARGS "cltbrpn:Vh"
-#define LAT_USAGE "usage: lat [-cltbrpnVh] [file...]"
+#define LAT_SHORT_ARGS "cltbrpn:e:Vh"
+#define LAT_USAGE "usage: lat [-cltbrpneVh] [file...]"
 
 struct config conf;
 
@@ -16,17 +16,19 @@ void help(void) {
          "embellishments\n\n");
 
   printf("%s\n\n", LAT_USAGE);
-  printf(
-      "options:\n"
-      "\t-c\t\t toggle color\n"
-      "\t-l\t\t toggle line numbers\n"
-      "\t-t\t\t toggle file info headers\n"
-      "\t-b\t\t set binary mode, -b forces binary and -bb forces NOT binary\n"
-      "\t-r\t\t print everything (headers, line numbers, etc.) to stdout (or equivalent)\n"
-      "\t-p\t\t print file with the pager (uses less)\n"
-      "\t-n <name>\t\t manually set the name of the file in the title\n"
-      "\t-V\t\t show program version\n"
-      "\t-h\t\t display this help text\n\n");
+  printf("options:\n"
+         "\t-c           toggle color\n"
+         "\t-l           toggle line numbers\n"
+         "\t-t           toggle file info headers\n"
+         "\t-b           set binary mode, -b forces binary and -bb forces NOT "
+         "binary\n"
+         "\t-r           print everything (headers, line numbers, etc.) to "
+         "stdout (or equivalent)\n"
+         "\t-p           print file with the pager (uses less)\n"
+         "\t-n <name>    manually set the name of the file shown in the title\n"
+         "\t-e <program> link extension to lat\n"
+         "\t-V           show program version\n"
+         "\t-h           display this help text\n\n");
   printf("environment:\n"
          "\tNO_COLOR, see https://no-color.org/\n");
 }
@@ -68,6 +70,9 @@ int parseargs(int argc, char *argv[]) {
       break;
     case 'n':
       conf.name = optarg;
+      break;
+    case 'e':
+      conf.extension = optarg;
       break;
     case 'V':
       version();

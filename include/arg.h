@@ -14,6 +14,7 @@ struct config {
   bool literal;
   bool pager;
   char *name;
+  char *extension;
   bool has_read_stdin;
 };
 

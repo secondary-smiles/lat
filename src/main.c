@@ -83,11 +83,14 @@ void run(FILE *fp, char *filename, bool tty) {
     int linecount = 1;
     for (int i = 0; i < f.lc; i++) {
       if (conf.lines) {
-        char *padding = linepad(linecount, f.lc);
-        fprintf(st, "%s%s%d│%s ", c.grey, padding, i + 1, c.reset);
+        { // line numbers
+          char *padding = linepad(linecount, f.lc);
+          fprintf(err, "%s%s%d│%s ", c.grey, padding, i + 1, c.reset);
+          free(padding);
+        }
+
         fwrite(f.lines[i].buf, 1, f.lines[i].len, st);
         fprintf(st, "\n");
-        free(padding);
         linecount++;
       } else {
         fprintf(st, "%s\n", f.lines[i].buf);
@@ -97,7 +100,8 @@ void run(FILE *fp, char *filename, bool tty) {
   } else {
     fwrite(f.buf, 1, f.buflen, st);
     fflush(st);
-    fwrite("\n", 1, 1, err);
+    if (tty)
+      fwrite("\n", 1, 1, err);
   }
   free(f.buf);
   free(f.lines);
@@ -127,6 +131,7 @@ void initconf(void) {
   conf.lines = true;
 
   conf.name = NULL;
+  conf.extension = NULL;
 }
 
 void clearstdin(void) {
@@ -150,8 +155,13 @@ int main(int argc, char *argv[]) {
 
   bool tty = isatty(STDOUT_FILENO);
 
+  int offset = parseargs(argc, argv);
+
+  conf.headers = conf.headers && tty;
+
+  printf("set extension to '%s'\n", conf.extension);
+
   if (argc > 1) {
-    int offset = parseargs(argc, argv);
 
     tty = tty || conf.literal;
 
