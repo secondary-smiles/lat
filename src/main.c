@@ -15,13 +15,41 @@
 FILE *st;
 FILE *err;
 
+struct colors {
+  char *invert_t;
+  char *grey;
+  char *reset;
+};
+
+struct colors c;
+
+void initcolor(void) {
+  c.invert_t = conf.color ? INVERT_T : "";
+  c.grey = conf.color ? GREY : "";
+  c.reset = conf.color ? RESET : "";
+}
+
+void printheadertop(char *filename, bool binary) {
+  char *name = conf.name == NULL ? filename : conf.name;
+  char *addon = binary ? "<binary>" : "";
+  if (conf.isstdin && !conf.pager)
+    fprintf(err, "\x1b[2K\r%s%s%s%s\n", c.invert_t, name, addon, c.reset);
+  else
+    fprintf(err, "%s%s%s%s\n", c.invert_t, name, addon, c.reset);
+}
+
+void printheaderbottom(size_t buflen) {
+  float rounded;
+  char *format = formatbytes(buflen, &rounded);
+
+  fprintf(err, "%s%.2f %s%s\n", c.invert_t, rounded, format, c.reset);
+}
+
 void run(FILE *fp, char *filename, bool tty) {
-  const char *invert_t = conf.color ? INVERT_T : "";
-  const char *grey = conf.color ? GREY : "";
-  const char *reset = conf.color ? RESET : "";
+  initcolor();
 
   struct filedata f;
-  f = readfile(fp, conf.stdin);
+  f = readfile(fp, conf.isstdin);
 
   if (conf.pager) {
     st = popen("less", "w");
@@ -41,15 +69,11 @@ void run(FILE *fp, char *filename, bool tty) {
     f.binary = false;
   }
 
-  char *name = conf.name == NULL ? filename : conf.name;
   if (conf.headers) {
-    char *addon = f.binary ? "<binary>" : "";
-    if (conf.stdin && !conf.pager)
-      fprintf(err, "\x1b[2K\r%s%s%s%s\n", invert_t, name, addon, reset);
-    else
-      fprintf(err, "%s%s%s%s\n", invert_t, name, addon, reset);
+    printheadertop(filename, f.binary);
   }
 
+  // any/all processing to be done
   conf.process = (tty && !f.binary);
   if (conf.process) { // file display processing
     loadlines(&f);
@@ -60,7 +84,7 @@ void run(FILE *fp, char *filename, bool tty) {
     for (int i = 0; i < f.lc; i++) {
       if (conf.lines) {
         char *padding = linepad(linecount, f.lc);
-        fprintf(st, "%s%s%d│%s ", grey, padding, i + 1, reset);
+        fprintf(st, "%s%s%d│%s ", c.grey, padding, i + 1, c.reset);
         fwrite(f.lines[i].buf, 1, f.lines[i].len, st);
         fprintf(st, "\n");
         free(padding);
@@ -82,10 +106,7 @@ void run(FILE *fp, char *filename, bool tty) {
   fflush(err);
 
   if (conf.headers) {
-    float rounded;
-    char *format = formatbytes(f.buflen, &rounded);
-
-    fprintf(err, "%s%.2f %s%s\n", invert_t, rounded, format, reset);
+    printheaderbottom(f.buflen);
   }
 
   if (conf.pager) {
@@ -95,7 +116,7 @@ void run(FILE *fp, char *filename, bool tty) {
 
 void initconf(void) {
   conf.force_binary = -1;
-  conf.stdin = false;
+  conf.isstdin = false;
   conf.has_read_stdin = false;
   conf.pager = false;
   conf.literal = false;
@@ -131,16 +152,15 @@ int main(int argc, char *argv[]) {
 
   if (argc > 1) {
     int offset = parseargs(argc, argv);
+
     tty = tty || conf.literal;
-    conf.headers = conf.headers && tty; // tty still overrides user
-    conf.pager = conf.pager && tty;
 
     for (int i = offset; i < argc; i++) {
       if (*argv[i] == '-') {
         if (conf.has_read_stdin)
           clearstdin();
         conf.has_read_stdin = true;
-        conf.stdin = true;
+        conf.isstdin = true;
         run(stdin, "stdin", tty);
         if (tty && (i + 1 != argc)) {
           fprintf(err, "\n"); // separate concurrent files in tty
@@ -149,7 +169,7 @@ int main(int argc, char *argv[]) {
         continue;
       }
 
-      conf.stdin = false;
+      conf.isstdin = false;
       FILE *fp = fopen(argv[i], "rb");
       if (fp == NULL)
         die(argv[i]);
@@ -161,11 +181,11 @@ int main(int argc, char *argv[]) {
     }
 
     if (offset == argc) {
-      conf.stdin = true;
+      conf.isstdin = true;
       run(stdin, "stdin", tty);
     }
   } else {
-    conf.stdin = true;
+    conf.isstdin = true;
     run(stdin, "stdin", tty); // for piped-input or repl-like behavior
   }
 

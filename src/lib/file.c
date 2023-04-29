@@ -4,6 +4,7 @@
 
 #include "types.h"
 #include "util.h"
+#include "arg.h"
 
 bool isbinary(struct filedata *f) {
 
@@ -22,7 +23,7 @@ bool isbinary(struct filedata *f) {
   }
 }
 
-struct filedata readfile(FILE *fp, bool isstdin) {
+struct filedata readfile(FILE *fp) {
   struct filedata f;
 
   f.lc = 0;
@@ -32,7 +33,7 @@ struct filedata readfile(FILE *fp, bool isstdin) {
   f.buf = NULL;
   f.lines = NULL;
 
-  if (isstdin) {
+  if (conf.isstdin) {
     size_t bufsize = 1024;
     f.buf = malloc(bufsize);
     if (f.buf == NULL)
