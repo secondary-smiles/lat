@@ -8,7 +8,7 @@ Set Margin 10
 
 Set FontSize 32
 Set Width 2400
-Set Height 1200
+Set Height 2000
 Set TypingSpeed 0.2
 
 Type "lat Makefile"
