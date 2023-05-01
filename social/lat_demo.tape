@@ -1,5 +1,5 @@
 Require lat
-Output social/render/name.gif
+Output social/render/lat_demo.gif
 
 Set Theme "Gruvbox Dark"
 Set WindowBar Rings
