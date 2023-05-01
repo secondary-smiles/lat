@@ -42,7 +42,6 @@ struct filedata readfile(FILE *fp, bool isstdin) {
     while (fread(&c, 1, 1, fp) > 0) {
       if (f.buflen == bufsize - 1) {
         bufsize *= 2;
-
         char *new_buf = realloc(f.buf, bufsize);
         if (new_buf == NULL)
           die("realloc");

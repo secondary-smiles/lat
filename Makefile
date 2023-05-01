@@ -6,7 +6,11 @@ ODIR:=obj
 BINDIR:=build
 
 CC:=cc
-CFLAGS:=-I$(IDIR) -Wall -Wextra -pedantic -Ofast
+# OMG SO FAST (see https://www.shlomifish.org/humour/by-others/funroll-loops/Gentoo-is-Rice.html)
+# CFLAGS:=-I$(IDIR) -Wall -Wextra -pedantic -Ofast -faggressive-loop-optimizations -funroll-all-loops  -march=native
+# For a stable experience
+CFLAGS:=-I$(IDIR) -Wall -Wextra -pedantic -O2 -march=native
+
 LIB:=
 
 DEPS:=$($(IDIR)/%.h)
