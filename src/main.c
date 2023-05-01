@@ -1,12 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
 #include "arg.h"
 #include "file.h"
 #include "process.h"
 #include "types.h"
 #include "util.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #define INVERT_T "\x1b[7m"
 #define UINVERT_T "\x1b[27m"
@@ -77,6 +76,7 @@ void run(FILE *fp, char *filename, bool tty) {
     fwrite("\n", 1, 1, err);
   }
   free(f.buf);
+  free(f.lines);
 
   fflush(st); // prevent timing inconsistencies between st and err
   fflush(err);

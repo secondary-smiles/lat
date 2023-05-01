@@ -1,11 +1,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <stdio.h>
+
 #include "types.h"
 #include "util.h"
 
 void appendline(struct filedata *f, char *data, size_t len) {
   f->lines = realloc(f->lines, sizeof(struct line) * (f->lc + 1));
+  if (f->lines == NULL)
+    die("realloc");
 
   size_t loc = f->lc;
 
@@ -19,7 +23,7 @@ void loadlines(struct filedata *f) {
   f->lc = 0;
 
   size_t offset = 0;
-  size_t linelen = 4096;
+  size_t linelen = 1024;
   char *line = malloc(linelen);
   if (line == NULL)
     die("malloc");
@@ -27,10 +31,11 @@ void loadlines(struct filedata *f) {
   for (size_t i = 0; i < f->buflen; i++) {
     char c = f->buf[i];
     if (c == '\n') {
-      if (offset < linelen) { // shrink
+      if (offset >= 1 && offset < linelen) { // shrink to fit
         char *new_line = realloc(line, offset);
         if (new_line == NULL)
           die("realloc");
+
         line = new_line;
       }
 
@@ -58,7 +63,7 @@ void loadlines(struct filedata *f) {
   }
 
   // capture last line
-  if (offset < linelen) { // shrink
+  if (offset >= 1 && offset < linelen) { // shrink
     char *new_line = realloc(line, offset);
     if (new_line == NULL)
       die("realloc");
