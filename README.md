@@ -40,7 +40,7 @@ Summary
 ```
 ~~as you can see, the extra features do take their toll on performance, but overall, `lat` is generally nearly on-par with `cat`, and *far* faster than `bat`.~~
 
-**As of v0.12.2 `lat` is the new fastest of the three!** (on my machine)
+**As of v0.12.2 `lat` is the new fastest of the three!** (on my machine and with reasonably sized files)
 
 ## Install
 `lat` is not yet at a stable version (`v1.0.0`), so it is not on any package managers. 
