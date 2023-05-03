@@ -1,11 +1,13 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
 #include "arg.h"
+#include "exec.h"
 #include "file.h"
 #include "process.h"
 #include "types.h"
 #include "util.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 #define INVERT_T "\x1b[7m"
 #define UINVERT_T "\x1b[27m"
@@ -89,6 +91,7 @@ void run(FILE *fp, char *filename, bool tty) {
           free(padding);
         }
 
+        f.lines[i] = runextension(&f.lines[i], filename, i + 1);
         fwrite(f.lines[i].buf, 1, f.lines[i].len, st);
         fprintf(st, "\n");
         linecount++;
