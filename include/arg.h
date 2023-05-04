@@ -2,7 +2,7 @@
 #define ARG_H
 #include <stdbool.h>
 
-#define LAT_VERSION "0.12.2"
+#define LAT_VERSION "0.12.3"
 
 struct config {
   bool isstdin;

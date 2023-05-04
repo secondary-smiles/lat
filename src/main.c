@@ -91,7 +91,9 @@ void run(FILE *fp, char *filename, bool tty) {
           free(padding);
         }
 
-        f.lines[i] = runextension(&f.lines[i], filename, i + 1);
+        if (conf.extension != NULL) {
+          f.lines[i] = runextension(&f.lines[i], filename, i + 1);
+        }
         fwrite(f.lines[i].buf, 1, f.lines[i].len, st);
         fprintf(st, "\n");
         linecount++;
@@ -161,8 +163,6 @@ int main(int argc, char *argv[]) {
   int offset = parseargs(argc, argv);
 
   conf.headers = conf.headers && tty;
-
-  printf("set extension to '%s'\n", conf.extension);
 
   if (argc > 1) {
 
