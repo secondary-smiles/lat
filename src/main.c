@@ -3,7 +3,6 @@
 #include <unistd.h>
 
 #include "arg.h"
-#include "extension.h"
 #include "file.h"
 #include "process.h"
 #include "types.h"
@@ -54,7 +53,7 @@ void run(FILE *fp, char *filename, bool tty) {
   f = readfile(fp, conf.isstdin);
 
   if (conf.extension != NULL) {
-    f = runfilter(&f);
+    // TODO
   }
 
   if (conf.pager) {
