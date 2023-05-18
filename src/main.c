@@ -3,7 +3,7 @@
 #include <unistd.h>
 
 #include "arg.h"
-#include "exec.h"
+#include "extension.h"
 #include "file.h"
 #include "process.h"
 #include "types.h"
@@ -53,6 +53,10 @@ void run(FILE *fp, char *filename, bool tty) {
   struct filedata f;
   f = readfile(fp, conf.isstdin);
 
+  if (conf.extension != NULL) {
+    f = runfilter(&f);
+  }
+
   if (conf.pager) {
     st = popen("less", "w");
     err = st;
@@ -91,9 +95,6 @@ void run(FILE *fp, char *filename, bool tty) {
           free(padding);
         }
 
-        if (conf.extension != NULL) {
-          f.lines[i] = runextension(&f.lines[i], filename, i + 1);
-        }
         fwrite(f.lines[i].buf, 1, f.lines[i].len, st);
         fprintf(st, "\n");
         linecount++;
