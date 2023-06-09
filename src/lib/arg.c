@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdnoreturn.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 
 #include "arg.h"
@@ -24,9 +25,10 @@ void help(void) {
          "binary\n"
          "\t-r           print everything (headers, line numbers, etc.) to "
          "stdout (or equivalent)\n"
-         "\t-p           print file with the pager (uses less)\n"
+         "\t-p           disable or enable pager (uses less)\n"
          "\t-n <name>    manually set the name of the file shown in the title\n"
-         // "\t-e <program> NONFUNCTIONAL (will be added soon)  link extension to lat\n"
+         // "\t-e <program> NONFUNCTIONAL (will be added soon)  link extension
+         // to lat\n"
          "\t-V           show program version\n"
          "\t-h           display this help text\n\n");
   printf("environment:\n"

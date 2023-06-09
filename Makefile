@@ -34,7 +34,6 @@ prep:
 	-@mkdir -p $(IDIR)
 	-@mkdir -p $(ODIR)
 	-@mkdir -p $(BINDIR)
-	@echo $(BINDIR)/ >> .gitignore
 
 .PHONY: clean
 clean:
