@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 
 #include "arg.h"
@@ -52,8 +53,23 @@ void run(FILE *fp, char *filename, bool tty) {
   struct filedata f;
   f = readfile(fp, conf.isstdin);
 
+  // any/all processing to be done
+  // TODO: maybe multithread?
+  conf.process = (tty && !f.binary);
+  if (conf.process) { // file display processing
+    loadlines(&f);
+  }
+
   if (conf.extension != NULL) {
     // TODO
+  }
+
+  struct winsize w;
+
+  if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) != -1 || w.ws_col != 0) {
+    if (w.ws_row <= f.lc + 5) {
+      conf.pager = !conf.pager;
+    }
   }
 
   if (conf.pager) {
@@ -76,12 +92,6 @@ void run(FILE *fp, char *filename, bool tty) {
 
   if (conf.headers) {
     printheadertop(filename, f.binary);
-  }
-
-  // any/all processing to be done
-  conf.process = (tty && !f.binary);
-  if (conf.process) { // file display processing
-    loadlines(&f);
   }
 
   if (conf.process) {
