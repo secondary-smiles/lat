@@ -23,9 +23,11 @@ VPATH=$(dir $(SRCS))
 OBJ=$(patsubst %.c,./$(ODIR)/%.o,$(BASENAME))
 
 $(ODIR)/%.o: %.c $(DEPS)
+	-@mkdir -p $(ODIR)
 	$(CC) -c -o $@ $< $(CFLAGS) $(LIB)
 
 $(NAME): $(OBJ)
+	-@mkdir -p $(BINDIR)
 	$(CC) -o $(BINDIR)/$@ $^ $(CFLAGS) $(LIB)
 
 .PHONY: prep

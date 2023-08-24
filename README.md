@@ -15,7 +15,6 @@ git clone https://github.com/secondary-smiles/lat.git
 
 cd lat
 
-make prep
 make
 
 ./build/lat -V
